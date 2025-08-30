@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TRAIN FITNESS - Juice Bar Website
 
-## Getting Started
+This is a modern, interactive website for the TRAIN FITNESS juice bar, built with Next.js and Framer Motion. It's designed to provide a visually engaging and seamless user experience for customers browsing the drink menu.
 
-First, run the development server:
+---
+
+## ✨ Key Features
+
+* **Interactive Drink Menu:** A fully animated grid of drinks with multi-stage image transitions that respond to scroll, hover, and clicks.
+* **Dynamic Details Panel:** An in-page panel reveals detailed nutritional information for each drink with a "blending" loading animation.
+* **Advanced Filtering:** A powerful filtering system that allows users to sort drinks by type (Smoothie, Juiced, etc.) and by multiple health benefits (Low Fat, Dairy Free, etc.).
+* **Dual Theming:** A custom-built light/dark mode theme switcher that uses the official brand logos and colors.
+* **Responsive Design:** A mobile-first design that ensures a perfect user experience on all devices, from phones to desktops.
+* **Smooth Scrolling & Animations:** Built with Framer Motion to provide fluid page transitions and micro-interactions.
+
+---
+
+## 🚀 Tech Stack
+
+* **Framework:** [Next.js](https://nextjs.org/) (React Framework)
+* **Language:** [TypeScript](https://www.typescriptlang.org/)
+* **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+* **Animation:** [Framer Motion](https://www.framer.com/motion/)
+* **Icons:** [React Icons](https://react-icons.github.io/react-icons/)
+
+---
+
+## 🏁 Getting Started
+
+Follow these steps to get the project running locally.
+
+### 1. Installation
+
+Clone the repository and install the dependencies using npm:
+
+```bash
+git clone <your-repo-url>
+cd <your-repo-folder>
+npm install
+```
+
+### 2. Running the Development Server
+
+Start the local development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
