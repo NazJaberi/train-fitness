@@ -14,7 +14,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode; }) {
   return (
-    <html lang="en" className="light" style={{ colorScheme: 'light' }}>
+    // THE FIX IS HERE: We remove the hardcoded class/style and add suppressHydrationWarning
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} bg-brandBgLight dark:bg-brandBgDark transition-colors duration-300`}>
         <ThemeProvider>
           <Navbar />

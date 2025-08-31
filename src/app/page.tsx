@@ -4,22 +4,18 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import HeroSection from "@/components/home/HeroSection";
 import DrinkGrid from "@/components/home/DrinkGrid";
-import { Drink, drinks } from "@/lib/dummyData";
 import { LoadingScreen } from "@/components/layout/LoadingScreen";
 import { FilterBar } from "@/components/home/FilterBar";
+import { Drink } from "@/lib/dummyData";
+import { client } from "@/lib/sanityClient";
 
-// ----- Typed helpers -----
+// ----- Typed helpers (Your version is great) -----
 type HealthBenefit = Drink["healthBenefits"][number];
 type DrinkTypeFilter = "All" | Drink["type"];
 
 const DRINK_TYPES: Drink["type"][] = ["Smoothie", "Crushed", "Juiced", "Blended"];
 const HEALTH_BENEFITS: HealthBenefit[] = [
-  "< 200 Cal",
-  "Low Gluten",
-  "Low Fat",
-  "Source of Protein",
-  "Source of Fibre",
-  "Dairy Free",
+  "< 200 Cal", "Low Gluten", "Low Fat", "Source of Protein", "Source of Fibre", "Dairy Free",
 ];
 
 const isDrinkTypeFilter = (val: string): val is DrinkTypeFilter =>
@@ -28,43 +24,46 @@ const isDrinkTypeFilter = (val: string): val is DrinkTypeFilter =>
 const isHealthBenefit = (val: string): val is HealthBenefit =>
   (HEALTH_BENEFITS as string[]).includes(val);
 
-// ----- Page -----
+// ----- Page Component -----
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedDrink, setSelectedDrink] = useState<Drink | null>(null);
-
-  // Filters
+  const [drinks, setDrinks] = useState<Drink[]>([]);
   const [activeType, setActiveType] = useState<DrinkTypeFilter>("All");
   const [activeHealthBenefits, setActiveHealthBenefits] = useState<HealthBenefit[]>([]);
-
   const drinksSectionRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 2000);
-    return () => clearTimeout(timer);
+    const fetchDrinks = async () => {
+      const query = `*[_type == "drink"] | order(drinkId asc){
+        "id": drinkId, name, "images": { "cup": images.cup.asset->url, "shadow": images.shadow.asset->url, "hero": images.hero.asset->url, "ingredients": images.ingredients.asset->url }, "type": drinkType, healthBenefits, ingredients, nutrition
+      }`;
+      const sanityDrinks = await client.fetch<Drink[]>(query);
+      setDrinks(sanityDrinks);
+      setIsLoading(false);
+    };
+    fetchDrinks();
   }, []);
 
   const filteredDrinks = useMemo<Drink[]>(() => {
     return drinks
       .filter((drink) => activeType === "All" || drink.type === activeType)
       .filter((drink) =>
-        // all selected benefits must be in the drink's benefits
-        activeHealthBenefits.every((benefit) => drink.healthBenefits.includes(benefit))
+        activeHealthBenefits.every((benefit) => drink.healthBenefits?.includes(benefit))
       );
-  }, [activeType, activeHealthBenefits]);
+  }, [activeType, activeHealthBenefits, drinks]);
 
+  // === FIX: FILLING IN THE HANDLER LOGIC ===
   const handleCardClick = (drink: Drink) => {
     setSelectedDrink((prev) => (prev?.id === drink.id ? null : drink));
   };
 
-  // Accept string from FilterBar, but narrow to our union
   const handleTypeChange = (type: string) => {
     if (!isDrinkTypeFilter(type)) return;
     setActiveType(type);
     setSelectedDrink(null);
   };
 
-  // Accept string from FilterBar, but narrow to our union
   const handleHealthBenefitChange = (benefit: string) => {
     if (!isHealthBenefit(benefit)) return;
     setActiveHealthBenefits((prev) =>
@@ -76,6 +75,7 @@ export default function Home() {
   const handleScrollToDrinks = () => {
     drinksSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+  // === END OF FIX ===
 
   if (isLoading) return <LoadingScreen />;
 

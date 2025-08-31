@@ -1,4 +1,5 @@
-// src/components/home/DrinkDetails.tsx
+// juice-bar-website/src/components/home/DrinkDetails.tsx
+
 "use client";
 
 import { Drink } from "@/lib/dummyData";
@@ -42,11 +43,12 @@ export const DrinkDetails = ({ drink }: { drink: Drink }) => {
 
   if (!drink?.nutrition) return null;
 
-  // Helper to split value+unit (e.g. "1110 kJ")
+  // Helper to split value+unit (e.g., "1110 kJ")
   const split = (raw: string) => {
     const m = raw.trim().match(/^([<>\d.,\s]+)\s*([A-Za-z%μ]+)?$/);
     if (!m) return { value: raw, unit: "" };
     return { value: m[1].trim(), unit: m[2] || "" };
+    // Note: calories are rendered in the label text, not split
   };
 
   return (
@@ -96,11 +98,11 @@ export const DrinkDetails = ({ drink }: { drink: Drink }) => {
                   </div>
                 </div>
 
-                {/* Single final image (ingredients) */}
+                {/* Single final image (ingredients only) */}
                 <div className="relative w-full md:w-1/2">
                   <div className="relative w-full aspect-square">
                     <Image
-                      src={drink.images.ingredients}
+                      src={drink.images.ingredients || "/placeholder-ingredients.png"}
                       alt={`${drink.name} ingredients`}
                       fill
                       sizes="(max-width: 768px) 90vw, (max-width: 1280px) 40vw, 35vw"
@@ -114,7 +116,9 @@ export const DrinkDetails = ({ drink }: { drink: Drink }) => {
               {/* --- NUTRITION --- */}
               <div className="p-4 sm:p-6 md:p-8 bg-green-500/85">
                 <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between">
-                  <h3 className="text-sm font-extrabold tracking-wider text-white sm:text-base">SERVING SIZE</h3>
+                  <h3 className="text-sm font-extrabold tracking-wider text-white sm:text-base">
+                    SERVING SIZE
+                  </h3>
                   <div className="inline-flex p-1 rounded-md bg-white/10">
                     {(["ori", "med", "jnr"] as const).map((size) => (
                       <button

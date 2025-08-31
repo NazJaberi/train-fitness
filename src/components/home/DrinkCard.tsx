@@ -1,23 +1,25 @@
-// src/components/home/DrinkCard.tsx
+// juice-bar-website/src/components/home/DrinkCard.tsx
+
 "use client";
 
 import {
   motion,
   useReducedMotion,
+  useInView,
   type Variants,
   type Transition,
 } from "framer-motion";
 import { Drink } from "@/lib/dummyData";
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useEffect, useState } from "react";
 
-// --- Part 4: Timings & Easing (typed) ---
-const generalEase = [0.25, 0.1, 0.25, 1] as const; // tuple, not number[]
+// --- Timings & Easing (slowed down) ---
+const generalEase = [0.25, 0.1, 0.25, 1] as const;
 const heroPopEase = [0.22, 1, 0.36, 1] as const;
 
-const generalTransition: Transition = { duration: 0.26, ease: generalEase };
-const popTransition: Transition = { duration: 0.26, ease: heroPopEase };
-const revealTransition: Transition = { duration: 0.28 };
+const generalTransition: Transition = { duration: 0.36, ease: generalEase };
+const popTransition: Transition = { duration: 0.38, ease: heroPopEase, delay: 0.3 }; // hero enters later
+const revealTransition: Transition = { duration: 0.3 };
 
 // --- Main Component ---
 type DrinkCardProps = {
@@ -28,28 +30,34 @@ type DrinkCardProps = {
 
 export const DrinkCard = ({ drink, onClick, isSelected }: DrinkCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [isInView, setIsInView] = useState(false);
+
+  // Use IntersectionObserver with a higher threshold so hero waits until card is mostly visible
+  const cardRef = useRef<HTMLButtonElement | null>(null);
+  const inView = useInView(cardRef, { amount: 0.7, margin: "0px 0px -10% 0px", once: true });
   const shouldReduceMotion = useReducedMotion();
 
   // State C is triggered by hover or selection
   const isRevealed = isHovered || isSelected;
 
-  // --- Part 3: Animation States (A, B, C) defined as variants ---
+  // --- Animation States ---
+  // A: rest (cup + shadow only)
+  // B: inView (hero pops in, cup lifts a touch)
+  // C: reveal (ingredients take over; others fade)
   const shadowVariants: Variants = {
     rest: { scale: 1, opacity: 1 },
-    inView: { scale: 1.06, opacity: 0.85, transition: generalTransition },
+    inView: { scale: 1.05, opacity: 0.88, transition: generalTransition },
     reveal: { scale: 0.98, opacity: 0, transition: revealTransition },
   };
 
   const cupVariants: Variants = {
-    rest: { scale: 1, y: 0 },
-    inView: { scale: 1.04, y: -4, transition: { duration: 0.22, ease: generalEase } },
+    rest: { scale: 1, y: 0, opacity: 1 },
+    inView: { scale: 1.03, y: -4, opacity: 1, transition: generalTransition },
     reveal: { scale: 0.98, opacity: 0, transition: revealTransition },
   };
 
   const heroVariants: Variants = {
-    rest: { opacity: 0, scale: 0.95, y: 8, rotate: 0 },
-    inView: { opacity: 1, scale: 1, y: -8, rotate: -2, transition: { ...popTransition, delay: 0.07 } },
+    rest: { opacity: 0, scale: 0.95, y: 10, rotate: 0 },
+    inView: { opacity: 1, scale: 1, y: -6, rotate: -2, transition: popTransition },
     reveal: { scale: 0.98, opacity: 0, transition: revealTransition },
   };
 
@@ -59,7 +67,7 @@ export const DrinkCard = ({ drink, onClick, isSelected }: DrinkCardProps) => {
     reveal: { opacity: 1, scale: 1.02, y: 0, transition: { ...revealTransition, delay: 0.05 } },
   };
 
-  // Variants for users who prefer reduced motion (opacity-only)
+  // Reduced motion = opacity-only
   const reducedMotionVariants: Variants = {
     rest: { opacity: 1 },
     inView: { opacity: 1 },
@@ -71,13 +79,15 @@ export const DrinkCard = ({ drink, onClick, isSelected }: DrinkCardProps) => {
     reveal: { opacity: 1 },
   };
 
+  // Decide state without relying on intermediate state setters
+  const layerState: "rest" | "inView" | "reveal" = isRevealed ? "reveal" : inView ? "inView" : "rest";
+
   return (
-    <motion.div
-      className="flex flex-col items-center justify-end h-96"
-      onViewportEnter={() => setIsInView(true)}
-    >
-      {/* Make the entire card interactive and focusable */}
+    <motion.div className="flex flex-col items-center justify-end h-96">
+      {/* Entire card interactive and focusable */}
       <motion.button
+        ref={cardRef}
+        type="button"
         onClick={onClick}
         className="relative w-full cursor-pointer h-80 focus:outline-none"
         onHoverStart={() => setIsHovered(true)}
@@ -85,46 +95,68 @@ export const DrinkCard = ({ drink, onClick, isSelected }: DrinkCardProps) => {
         onFocus={() => setIsHovered(true)}
         onBlur={() => setIsHovered(false)}
         aria-pressed={isSelected}
+        // Let Framer handle in-view internally too (safety if IntersectionObserver fallback)
+        initial="rest"
+        whileInView="inView"
+        viewport={{ amount: 0.7, once: true }}
       >
-        {/* Shadow Image (z-10) */}
+        {/* Shadow (z-10) */}
         <motion.div
-          className="absolute inset-0 z-10"
+          className="absolute inset-0 z-10 pointer-events-none"
           variants={shouldReduceMotion ? reducedMotionVariants : shadowVariants}
-          initial="rest"
-          animate={isRevealed ? "reveal" : isInView ? "inView" : "rest"}
+          animate={layerState}
         >
-          <Image src={drink.images.shadow} alt="" fill style={{ objectFit: "contain" }} priority />
+          <Image
+            src={drink.images.shadow || "/placeholder-shadow.png"}
+            alt=""
+            fill
+            style={{ objectFit: "contain" }}
+            priority
+          />
         </motion.div>
 
-        {/* Cup Image (z-20) */}
+        {/* Cup (z-20) */}
         <motion.div
-          className="absolute inset-0 z-20"
+          className="absolute inset-0 z-20 pointer-events-none"
           variants={shouldReduceMotion ? reducedMotionVariants : cupVariants}
-          initial="rest"
-          animate={isRevealed ? "reveal" : isInView ? "inView" : "rest"}
+          animate={layerState}
         >
-          <Image src={drink.images.cup} alt={drink.name} fill style={{ objectFit: "contain" }} priority />
+          <Image
+            src={drink.images.cup}
+            alt={drink.name}
+            fill
+            style={{ objectFit: "contain" }}
+            priority
+          />
         </motion.div>
 
-        {/* Hero Image (z-30) */}
+        {/* Hero (z-30) */}
         <motion.div
-          className="absolute inset-0 z-30"
+          className="absolute inset-0 z-30 pointer-events-none"
           variants={shouldReduceMotion ? reducedMotionVariants : heroVariants}
-          initial="rest"
-          animate={isRevealed ? "reveal" : isInView ? "inView" : "rest"}
+          animate={layerState}
         >
-          <Image src={drink.images.hero} alt="" fill style={{ objectFit: "contain" }} />
+          <Image
+            src={drink.images.hero || "/placeholder-hero.png"}
+            alt=""
+            fill
+            style={{ objectFit: "contain" }}
+          />
         </motion.div>
 
-        {/* Ingredients Image (z-40) */}
+        {/* Ingredients (z-40) */}
         <motion.div
-          className="absolute inset-0 z-40"
+          className="absolute inset-0 z-40 pointer-events-none"
           variants={shouldReduceMotion ? reducedIngredientsVariants : ingredientsVariants}
-          initial="rest"
-          animate={isRevealed ? "reveal" : isInView ? "inView" : "rest"}
+          animate={layerState}
           style={{ willChange: "transform, opacity" }}
         >
-          <Image src={drink.images.ingredients} alt={`${drink.name} ingredients`} fill style={{ objectFit: "contain" }} />
+          <Image
+            src={drink.images.ingredients || "/placeholder-ingredients.png"}
+            alt={`${drink.name} ingredients`}
+            fill
+            style={{ objectFit: "contain" }}
+          />
         </motion.div>
       </motion.button>
 

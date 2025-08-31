@@ -1,4 +1,5 @@
-// src/components/home/DrinkGrid.tsx
+// juice-bar-website/src/components/home/DrinkGrid.tsx
+
 "use client";
 
 import DrinkCard from "./DrinkCard";
@@ -14,12 +15,13 @@ type DrinkGridProps = {
 };
 
 const chunkArray = <T,>(array: T[], size: number): T[][] => {
-  const chunkedArr: T[][] = [];
-  for (let i = 0; i < array.length; i += size) {
-    chunkedArr.push(array.slice(i, i + size));
-  }
-  return chunkedArr;
+  const out: T[][] = [];
+  for (let i = 0; i < array.length; i += size) out.push(array.slice(i, i + size));
+  return out;
 };
+
+const sameId = (a?: string | number | null, b?: string | number | null) =>
+  a != null && b != null ? String(a) === String(b) : false;
 
 const DrinkGrid = forwardRef<HTMLElement, DrinkGridProps>(
   ({ drinks, onCardClick, selectedDrink }, ref) => {
@@ -29,33 +31,37 @@ const DrinkGrid = forwardRef<HTMLElement, DrinkGridProps>(
     useEffect(() => {
       if (!selectedDrink) return;
       const isMobile =
-        typeof window !== "undefined" &&
-        window.matchMedia("(min-width: 768px)").matches === false;
+        typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches === false;
 
       const t = setTimeout(() => {
         detailsRef.current?.scrollIntoView({
           behavior: "smooth",
           block: isMobile ? "start" : "center",
         });
-      }, 100);
+      }, 120);
       return () => clearTimeout(t);
     }, [selectedDrink]);
 
     return (
-      <section ref={ref} className="py-20 transition-colors duration-300 bg-brandBgLight dark:bg-brandBgDark">
+      <section
+        ref={ref}
+        className="py-20 transition-colors duration-300 bg-brandBgLight dark:bg-brandBgDark"
+      >
         <div className="container px-4 mx-auto">
           <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
-            {chunkArray(drinks, 4).map((row, rowIndex) => (
+            {drinkRows.map((row, rowIndex) => (
               <div key={rowIndex} className="contents">
                 {row.map((drink) => {
-                  const isSelected = selectedDrink?.id === drink.id;
+                  const isSelected = sameId(selectedDrink?.id as any, drink.id as any);
+
                   return (
-                    <div key={drink.id} className="contents">
+                    <div key={String(drink.id)} className="contents">
                       <DrinkCard
                         drink={drink}
                         onClick={() => onCardClick(drink)}
                         isSelected={isSelected}
                       />
+
                       {/* Mobile-only: details right after the tapped card */}
                       {isSelected && (
                         <div className="col-span-1 md:hidden" ref={detailsRef}>
@@ -67,14 +73,19 @@ const DrinkGrid = forwardRef<HTMLElement, DrinkGridProps>(
                     </div>
                   );
                 })}
+
                 {/* Desktop/tablet: details span the row */}
-                {selectedDrink && row.some((d) => d.id === selectedDrink.id) && (
-                  <div className="hidden col-span-1 md:block md:col-span-2 lg:col-span-4" ref={detailsRef}>
-                    <AnimatePresence>
-                      <DrinkDetails drink={selectedDrink} />
-                    </AnimatePresence>
-                  </div>
-                )}
+                {selectedDrink &&
+                  row.some((d) => sameId(d.id as any, selectedDrink.id as any)) && (
+                    <div
+                      className="hidden col-span-1 md:block md:col-span-2 lg:col-span-4"
+                      ref={detailsRef}
+                    >
+                      <AnimatePresence>
+                        <DrinkDetails drink={selectedDrink} />
+                      </AnimatePresence>
+                    </div>
+                  )}
               </div>
             ))}
           </div>
@@ -84,7 +95,7 @@ const DrinkGrid = forwardRef<HTMLElement, DrinkGridProps>(
   }
 );
 
-// ✅ Add a display name so ESLint is happy
+// ESLint happiness
 DrinkGrid.displayName = "DrinkGrid";
 
 export default DrinkGrid;
