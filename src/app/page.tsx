@@ -1,4 +1,3 @@
-// src/app/page.tsx
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
@@ -6,10 +5,10 @@ import HeroSection from "@/components/home/HeroSection";
 import DrinkGrid from "@/components/home/DrinkGrid";
 import { LoadingScreen } from "@/components/layout/LoadingScreen";
 import { FilterBar } from "@/components/home/FilterBar";
-import { Drink } from "@/lib/dummyData";            // Type only
-import { client } from "@/lib/sanityClient";        // Sanity client
+import { Drink } from "@/lib/dummyData";          // Type only
+import { client } from "@/lib/sanityClient";      // Sanity client
 
-// ---- Typed helpers (same idea as before) ----
+// ---- Typed helpers ----
 type HealthBenefit = Drink["healthBenefits"][number];
 type DrinkTypeFilter = "All" | Drink["type"];
 
@@ -36,6 +35,7 @@ export default function Home() {
   // Fetch from Sanity once
   useEffect(() => {
     const fetchDrinks = async () => {
+      // This query now fetches the new nutritionByServingSize field
       const query = `*[_type == "drink"] | order(drinkId asc){
         "id": drinkId,
         name,
@@ -48,7 +48,7 @@ export default function Home() {
         "type": drinkType,
         healthBenefits,
         ingredients,
-        nutrition
+        nutritionByServingSize // <-- THIS LINE IS UPDATED
       }`;
       const sanityDrinks = await client.fetch<Drink[]>(query);
       setDrinks(sanityDrinks);
@@ -57,14 +57,14 @@ export default function Home() {
     fetchDrinks();
   }, []);
 
-  // Filtering
+  // Filtering logic
   const filteredDrinks = useMemo<Drink[]>(() => {
     return drinks
       .filter((drink) => activeType === "All" || drink.type === activeType)
       .filter((drink) => activeHealthBenefits.every((b) => drink.healthBenefits?.includes(b)));
   }, [activeType, activeHealthBenefits, drinks]);
 
-  // Handlers
+  // Event Handlers
   const handleCardClick = (drink: Drink) => {
     setSelectedDrink((prev) => (prev && String(prev.id) === String(drink.id) ? null : drink));
   };

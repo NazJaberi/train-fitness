@@ -1,54 +1,64 @@
-// juice-bar-website/src/components/home/DrinkDetails.tsx
-
 "use client";
 
-import { Drink } from "@/lib/dummyData";
+import { Drink, NutritionInfo } from "@/lib/dummyData";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { FaBlender } from "react-icons/fa";
 
-// Nutrition fact display
+// (NutritionFact and BlendingAnimation components are unchanged)
 const NutritionFact = ({ value, unit, label }: { value: string; unit: string; label: string }) => (
-  <div>
-    <p className="text-2xl font-bold tracking-tight text-white md:text-3xl">
-      {value}
-      {unit && <span className="ml-1 text-base font-medium md:text-lg">{unit}</span>}
-    </p>
-    <p className="text-xs md:text-sm text-white/70">{label}</p>
-  </div>
+    <div>
+      <p className="text-2xl font-bold tracking-tight text-white md:text-3xl">
+        {value}
+        {unit && <span className="ml-1 text-base font-medium md:text-lg">{unit}</span>}
+      </p>
+      <p className="text-xs md:text-sm text-white/70">{label}</p>
+    </div>
+);
+const BlendingAnimation = () => (
+    <div className="flex flex-col items-center justify-center w-full gap-4 h-72 md:h-96 text-brandPrimary">
+      <motion.div
+        animate={{ rotate: [0, -20, 20, -20, 20, 0] }}
+        transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <FaBlender size={40} />
+      </motion.div>
+      <p className="text-base font-bold md:text-lg">Blending...</p>
+    </div>
 );
 
-const BlendingAnimation = () => (
-  <div className="flex flex-col items-center justify-center w-full gap-4 h-72 md:h-96 text-brandPrimary">
-    <motion.div
-      animate={{ rotate: [0, -20, 20, -20, 20, 0] }}
-      transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}
-    >
-      <FaBlender size={40} />
-    </motion.div>
-    <p className="text-base font-bold md:text-lg">Blending...</p>
-  </div>
-);
 
 export const DrinkDetails = ({ drink }: { drink: Drink }) => {
   const [isBlending, setIsBlending] = useState(true);
-  const [activeSize, setActiveSize] = useState<"med" | "ori" | "jnr">("med");
+
+  // --- THIS IS THE FIX ---
+  // The state now defaults to the FIRST nutrition entry from the Sanity data array.
+  const [activeNutrition, setActiveNutrition] = useState<NutritionInfo | undefined>(
+    drink.nutritionByServingSize?.[0]
+  );
 
   useEffect(() => {
     setIsBlending(true);
+    // Also update the default when the drink itself changes.
+    setActiveNutrition(drink.nutritionByServingSize?.[0]);
     const t = setTimeout(() => setIsBlending(false), 650);
     return () => clearTimeout(t);
   }, [drink]);
+  
+  // (The rest of the component is the same as your latest version)
 
-  if (!drink?.nutrition) return null;
+  if (!drink?.nutritionByServingSize) return null;
 
-  // Helper to split value+unit (e.g., "1110 kJ")
-  const split = (raw: string) => {
+  const split = (raw: string = "") => {
     const m = raw.trim().match(/^([<>\d.,\s]+)\s*([A-Za-z%μ]+)?$/);
     if (!m) return { value: raw, unit: "" };
     return { value: m[1].trim(), unit: m[2] || "" };
-    // Note: calories are rendered in the label text, not split
+  };
+
+  const handleSizeChange = (sizeString: string) => {
+    const newNutrition = drink.nutritionByServingSize.find(n => n.servingSize === sizeString);
+    setActiveNutrition(newNutrition);
   };
 
   return (
@@ -76,29 +86,21 @@ export const DrinkDetails = ({ drink }: { drink: Drink }) => {
             >
               {/* --- TOP SECTION --- */}
               <div className="flex flex-col gap-6 p-4 sm:p-6 md:p-8 md:flex-row md:items-start">
-                {/* Text info */}
                 <div className="w-full md:w-1/2">
                   <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl text-brandTextLight dark:text-brandTextDark">
                     {drink.name}
                   </h2>
-
                   <p className="mt-2 text-sm font-medium sm:text-base text-brandPrimary">
-                    {drink.ingredients.join(", ")}
+                    {drink.ingredients?.join(", ")}
                   </p>
-
                   <div className="flex flex-wrap gap-2 mt-4">
-                    {drink.healthBenefits.map((b) => (
-                      <span
-                        key={b}
-                        className="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-brandPrimary/10 text-brandPrimary ring-1 ring-brandPrimary/20"
-                      >
+                    {drink.healthBenefits?.map((b) => (
+                      <span key={b} className="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-brandPrimary/10 text-brandPrimary ring-1 ring-brandPrimary/20">
                         {b}
                       </span>
                     ))}
                   </div>
                 </div>
-
-                {/* Single final image (ingredients only) */}
                 <div className="relative w-full md:w-1/2">
                   <div className="relative w-full aspect-square">
                     <Image
@@ -114,39 +116,38 @@ export const DrinkDetails = ({ drink }: { drink: Drink }) => {
               </div>
 
               {/* --- NUTRITION --- */}
-              <div className="p-4 sm:p-6 md:p-8 bg-green-500/85">
-                <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between">
-                  <h3 className="text-sm font-extrabold tracking-wider text-white sm:text-base">
-                    SERVING SIZE
-                  </h3>
-                  <div className="inline-flex p-1 rounded-md bg-white/10">
-                    {(["ori", "med", "jnr"] as const).map((size) => (
-                      <button
-                        key={size}
-                        onClick={() => setActiveSize(size)}
-                        className={`px-3 py-1.5 text-xs sm:text-sm rounded-md font-bold transition ${
-                          activeSize === size
-                            ? "bg-white text-green-700 shadow"
-                            : "text-white/80 hover:bg-white/15"
-                        }`}
-                      >
-                        {drink.nutrition.servingSize[size]}
-                      </button>
-                    ))}
+              {activeNutrition && (
+                <div className="p-4 sm:p-6 md:p-8 bg-green-500/85">
+                  <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between">
+                    <h3 className="text-sm font-extrabold tracking-wider text-white sm:text-base">SERVING SIZE</h3>
+                    <div className="inline-flex p-1 rounded-md bg-white/10">
+                      {drink.nutritionByServingSize.map((n) => (
+                        <button
+                          key={n.servingSize}
+                          onClick={() => handleSizeChange(n.servingSize)}
+                          className={`px-3 py-1.5 text-xs sm:text-sm rounded-md font-bold transition ${
+                            activeNutrition.servingSize === n.servingSize
+                              ? "bg-white text-green-700 shadow"
+                              : "text-white/80 hover:bg-white/15"
+                          }`}
+                        >
+                          {n.servingSize}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 text-center sm:grid-cols-3 md:grid-cols-4 gap-y-6 gap-x-4">
+                    <NutritionFact {...split(activeNutrition.energy)} label={`Energy (${activeNutrition.energy_cal})`} />
+                    <NutritionFact {...split(activeNutrition.protein)} label="Protein" />
+                    <NutritionFact {...split(activeNutrition.fatTotal)} label="Fat, total" />
+                    <NutritionFact {...split(activeNutrition.fatSaturated)} label="Fat - saturated" />
+                    <NutritionFact {...split(activeNutrition.carbohydrate)} label="Carbohydrate" />
+                    <NutritionFact {...split(activeNutrition.sugars)} label="Carbohydrate - sugars" />
+                    <NutritionFact {...split(activeNutrition.dietaryFibre)} label="Dietary fibre, total" />
+                    <NutritionFact {...split(activeNutrition.sodium)} label="Sodium" />
                   </div>
                 </div>
-
-                <div className="grid grid-cols-2 text-center sm:grid-cols-3 md:grid-cols-4 gap-y-6 gap-x-4">
-                  <NutritionFact {...split(drink.nutrition.energy)} label={`Energy (${drink.nutrition.energy_cal})`} />
-                  <NutritionFact {...split(drink.nutrition.protein)} label="Protein" />
-                  <NutritionFact {...split(drink.nutrition.fatTotal)} label="Fat, total" />
-                  <NutritionFact {...split(drink.nutrition.fatSaturated)} label="Fat - saturated" />
-                  <NutritionFact {...split(drink.nutrition.carbohydrate)} label="Carbohydrate" />
-                  <NutritionFact {...split(drink.nutrition.sugars)} label="Carbohydrate - sugars" />
-                  <NutritionFact {...split(drink.nutrition.dietaryFibre)} label="Dietary fibre, total" />
-                  <NutritionFact {...split(drink.nutrition.sodium)} label="Sodium" />
-                </div>
-              </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
