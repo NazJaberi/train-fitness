@@ -6,10 +6,10 @@ import HeroSection from "@/components/home/HeroSection";
 import DrinkGrid from "@/components/home/DrinkGrid";
 import { LoadingScreen } from "@/components/layout/LoadingScreen";
 import { FilterBar } from "@/components/home/FilterBar";
-import { Drink } from "@/lib/dummyData";
-import { client } from "@/lib/sanityClient";
+import { Drink } from "@/lib/dummyData";            // Type only
+import { client } from "@/lib/sanityClient";        // Sanity client
 
-// ----- Typed helpers (Your version is great) -----
+// ---- Typed helpers (same idea as before) ----
 type HealthBenefit = Drink["healthBenefits"][number];
 type DrinkTypeFilter = "All" | Drink["type"];
 
@@ -24,19 +24,31 @@ const isDrinkTypeFilter = (val: string): val is DrinkTypeFilter =>
 const isHealthBenefit = (val: string): val is HealthBenefit =>
   (HEALTH_BENEFITS as string[]).includes(val);
 
-// ----- Page Component -----
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedDrink, setSelectedDrink] = useState<Drink | null>(null);
   const [drinks, setDrinks] = useState<Drink[]>([]);
+
   const [activeType, setActiveType] = useState<DrinkTypeFilter>("All");
   const [activeHealthBenefits, setActiveHealthBenefits] = useState<HealthBenefit[]>([]);
   const drinksSectionRef = useRef<HTMLElement | null>(null);
 
+  // Fetch from Sanity once
   useEffect(() => {
     const fetchDrinks = async () => {
       const query = `*[_type == "drink"] | order(drinkId asc){
-        "id": drinkId, name, "images": { "cup": images.cup.asset->url, "shadow": images.shadow.asset->url, "hero": images.hero.asset->url, "ingredients": images.ingredients.asset->url }, "type": drinkType, healthBenefits, ingredients, nutrition
+        "id": drinkId,
+        name,
+        "images": {
+          "cup": images.cup.asset->url,
+          "shadow": images.shadow.asset->url,
+          "hero": images.hero.asset->url,
+          "ingredients": images.ingredients.asset->url
+        },
+        "type": drinkType,
+        healthBenefits,
+        ingredients,
+        nutrition
       }`;
       const sanityDrinks = await client.fetch<Drink[]>(query);
       setDrinks(sanityDrinks);
@@ -45,17 +57,16 @@ export default function Home() {
     fetchDrinks();
   }, []);
 
+  // Filtering
   const filteredDrinks = useMemo<Drink[]>(() => {
     return drinks
       .filter((drink) => activeType === "All" || drink.type === activeType)
-      .filter((drink) =>
-        activeHealthBenefits.every((benefit) => drink.healthBenefits?.includes(benefit))
-      );
+      .filter((drink) => activeHealthBenefits.every((b) => drink.healthBenefits?.includes(b)));
   }, [activeType, activeHealthBenefits, drinks]);
 
-  // === FIX: FILLING IN THE HANDLER LOGIC ===
+  // Handlers
   const handleCardClick = (drink: Drink) => {
-    setSelectedDrink((prev) => (prev?.id === drink.id ? null : drink));
+    setSelectedDrink((prev) => (prev && String(prev.id) === String(drink.id) ? null : drink));
   };
 
   const handleTypeChange = (type: string) => {
@@ -75,7 +86,6 @@ export default function Home() {
   const handleScrollToDrinks = () => {
     drinksSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-  // === END OF FIX ===
 
   if (isLoading) return <LoadingScreen />;
 

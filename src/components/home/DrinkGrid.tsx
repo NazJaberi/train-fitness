@@ -1,5 +1,3 @@
-// juice-bar-website/src/components/home/DrinkGrid.tsx
-
 "use client";
 
 import DrinkCard from "./DrinkCard";
@@ -23,37 +21,49 @@ const chunkArray = <T,>(array: T[], size: number): T[][] => {
 const sameId = (a?: string | number | null, b?: string | number | null) =>
   a != null && b != null ? String(a) === String(b) : false;
 
+function smoothScrollToEl(el: HTMLElement, offset = 0) {
+  // A small top margin for better spacing
+  const y = window.scrollY + el.getBoundingClientRect().top - offset - 16;
+  window.scrollTo({ top: y, behavior: "smooth" });
+}
+
 const DrinkGrid = forwardRef<HTMLElement, DrinkGridProps>(
   ({ drinks, onCardClick, selectedDrink }, ref) => {
     const drinkRows = chunkArray(drinks, 4);
-    const detailsRef = useRef<HTMLDivElement>(null);
+
+    // --- FIX 1: Create two separate refs ---
+    const mobileDetailsRef = useRef<HTMLDivElement>(null);
+    const desktopDetailsRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
       if (!selectedDrink) return;
-      const isMobile =
-        typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches === false;
+
+      const isMobile = window.matchMedia("(max-width: 767px)").matches;
+      const header = document.querySelector("header");
+      const headerH = header ? header.getBoundingClientRect().height : 0;
+
+      // --- FIX 2: Choose the correct ref based on screen size ---
+      const targetRef = isMobile ? mobileDetailsRef : desktopDetailsRef;
 
       const t = setTimeout(() => {
-        detailsRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: isMobile ? "start" : "center",
-        });
-      }, 120);
+        if (targetRef.current) {
+          requestAnimationFrame(() => {
+            smoothScrollToEl(targetRef.current!, headerH);
+          });
+        }
+      }, 50);
+
       return () => clearTimeout(t);
     }, [selectedDrink]);
 
     return (
-      <section
-        ref={ref}
-        className="py-20 transition-colors duration-300 bg-brandBgLight dark:bg-brandBgDark"
-      >
+      <section ref={ref} className="py-20 transition-colors duration-300 bg-brandBgLight dark:bg-brandBgDark">
         <div className="container px-4 mx-auto">
           <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
             {drinkRows.map((row, rowIndex) => (
               <div key={rowIndex} className="contents">
                 {row.map((drink) => {
-                  const isSelected = sameId(selectedDrink?.id as any, drink.id as any);
-
+                  const isSelected = sameId(selectedDrink?.id, drink.id);
                   return (
                     <div key={String(drink.id)} className="contents">
                       <DrinkCard
@@ -61,10 +71,9 @@ const DrinkGrid = forwardRef<HTMLElement, DrinkGridProps>(
                         onClick={() => onCardClick(drink)}
                         isSelected={isSelected}
                       />
-
-                      {/* Mobile-only: details right after the tapped card */}
+                      {/* --- FIX 3: Attach the correct ref to each element --- */}
                       {isSelected && (
-                        <div className="col-span-1 md:hidden" ref={detailsRef}>
+                        <div className="col-span-1 md:hidden" ref={mobileDetailsRef}>
                           <AnimatePresence>
                             <DrinkDetails drink={drink} />
                           </AnimatePresence>
@@ -73,19 +82,13 @@ const DrinkGrid = forwardRef<HTMLElement, DrinkGridProps>(
                     </div>
                   );
                 })}
-
-                {/* Desktop/tablet: details span the row */}
-                {selectedDrink &&
-                  row.some((d) => sameId(d.id as any, selectedDrink.id as any)) && (
-                    <div
-                      className="hidden col-span-1 md:block md:col-span-2 lg:col-span-4"
-                      ref={detailsRef}
-                    >
-                      <AnimatePresence>
-                        <DrinkDetails drink={selectedDrink} />
-                      </AnimatePresence>
-                    </div>
-                  )}
+                {selectedDrink && row.some((d) => sameId(d.id, selectedDrink.id)) && (
+                  <div className="hidden col-span-1 md:block md:col-span-2 lg:col-span-4" ref={desktopDetailsRef}>
+                    <AnimatePresence>
+                      <DrinkDetails drink={selectedDrink} />
+                    </AnimatePresence>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -95,7 +98,5 @@ const DrinkGrid = forwardRef<HTMLElement, DrinkGridProps>(
   }
 );
 
-// ESLint happiness
 DrinkGrid.displayName = "DrinkGrid";
-
 export default DrinkGrid;
