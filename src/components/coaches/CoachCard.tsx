@@ -12,7 +12,8 @@ export const CoachCard = ({ coach }: { coach: CoachCardData }) => {
   return (
     <Link href={`/coaches/${coach.slug}`} className="block group focus:outline-none focus-visible:ring-4 ring-brandPrimary/30 rounded-3xl">
       <motion.article
-        className="relative w-full overflow-hidden transition-shadow border shadow-sm h-96 group rounded-3xl border-black/5 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur hover:shadow-xl"
+        whileHover={{ y: -4 }}
+        className="relative h-96 w-full overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-sm transition-shadow hover:shadow-2xl"
       >
         {coach.photoUrl ? (
           <Image
@@ -27,17 +28,20 @@ export const CoachCard = ({ coach }: { coach: CoachCardData }) => {
         )}
 
         {/* Overlay Gradient */}
-        <div className="absolute inset-0 transition-opacity bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-80 group-hover:opacity-90" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-90 transition-opacity group-hover:opacity-95" />
 
         <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-          <h3 className="text-2xl font-bold">
+          <h3 className="text-2xl font-extrabold uppercase tracking-wide">
             {coach.name}
           </h3>
           {primarySpecialty && (
-            <p className="mt-1 text-sm text-white/80">
+            <p className="mt-1 text-sm font-semibold tracking-wide text-cyan-400">
               {primarySpecialty}
             </p>
           )}
+          <div className="mt-3">
+            <span className="inline-flex items-center rounded-full bg-cyan-500 px-3 py-1 text-xs font-bold uppercase tracking-wider text-black">View Profile</span>
+          </div>
         </div>
       </motion.article>
     </Link>
