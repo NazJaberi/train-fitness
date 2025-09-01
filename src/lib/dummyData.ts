@@ -30,4 +30,20 @@ export type Drink = {
   nutritionByServingSize: NutritionInfo[]; // This is the updated field
 };
 
-// You can delete the old 'drinks' array from this file.
+export type Class = {
+  name: string;
+  tagline: string;
+  description: any[]; // Sanity's block content
+  mainImageUrl: string;
+  intensityLevel: string;
+  duration: number;
+  caloriesBurned: string;
+  whatToBring: {
+    itemText: string;
+    iconUrl: string;
+  }[];
+  keyBenefits: {
+    benefitText: string;
+    iconUrl: string;
+  }[];
+};
