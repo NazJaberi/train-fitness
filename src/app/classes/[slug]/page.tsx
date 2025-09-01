@@ -17,19 +17,27 @@ export type ClassDetail = {
   description: any; // PortableTextBlock[]
   mainImageUrl?: string;
   intensityLevel?: string;
-  duration?: string;
+  duration?: number; // minutes
   caloriesBurned?: string;
   keyBenefits?: { benefitText: string; iconUrl?: string }[];
   whatToBring?: { itemText: string; iconUrl?: string }[];
   schedule?: { day: string; startTime: string; endTime: string; instructor?: { name?: string } }[];
+  gallery?: { url: string }[];
 };
 
-const Stat = ({ label, value }: { label: string; value?: string }) => (
-  <div className="px-4 py-3 border rounded-xl border-black/5 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur">
-    <div className="text-[11px] uppercase tracking-wider text-gray-500 mb-0.5">{label}</div>
-    <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">{value ?? "—"}</div>
-  </div>
-);
+const Stat = ({ label, value }: { label: string; value?: string | number }) => {
+  const display = (() => {
+    if (value === undefined || value === null || value === "") return "—";
+    if (label === "Duration" && typeof value === "number") return `${value} min`;
+    return String(value);
+  })();
+  return (
+    <div className="px-4 py-3 border rounded-xl border-black/5 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur">
+      <div className="text-[11px] uppercase tracking-wider text-gray-500 mb-0.5">{label}</div>
+      <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">{display}</div>
+    </div>
+  );
+};
 
 const InfoChip = ({ text, iconUrl }: { text: string; iconUrl?: string }) => (
   <div className="flex items-center gap-3 p-2 pr-3 border rounded-xl border-black/5 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur">
@@ -41,6 +49,94 @@ const InfoChip = ({ text, iconUrl }: { text: string; iconUrl?: string }) => (
     <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{text}</span>
   </div>
 );
+
+// Larger, more visual item for benefits/bring lists
+const LargeInfoItem = ({ text, iconUrl }: { text: string; iconUrl?: string }) => (
+  <div className="flex items-center gap-4 p-5 border rounded-xl border-black/5 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur">
+    <div className="relative flex-shrink-0 w-16 h-16 overflow-hidden rounded-2xl bg-black/5 dark:bg-white/10">
+      {iconUrl ? (
+        <Image src={iconUrl} alt="" fill className="object-contain p-3" />
+      ) : (
+        <span className="sr-only">item</span>
+      )}
+    </div>
+    <span className="text-xl font-extrabold text-gray-900 sm:text-2xl dark:text-gray-100">{text}</span>
+  </div>
+);
+
+// Simple fade carousel for gallery images
+const GalleryCarousel = ({
+  images,
+  name,
+}: {
+  images: { url: string }[];
+  name: string;
+}) => {
+  const [index, setIndex] = useState(0);
+  const count = images.length;
+  const prev = () => setIndex((i) => (i - 1 + count) % count);
+  const next = () => setIndex((i) => (i + 1) % count);
+
+  if (count === 0) return null;
+
+  return (
+    <div className="relative w-full overflow-hidden border rounded-2xl border-black/5 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur">
+      <div className="relative h-64 sm:h-80">
+        <motion.div
+          key={images[index]?.url}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.35 }}
+          className="absolute inset-0 cursor-grab active:cursor-grabbing"
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          onDragEnd={(e, info) => {
+            if (info.offset.x < -50) next();
+            else if (info.offset.x > 50) prev();
+          }}
+        >
+          <Image
+            src={images[index].url}
+            alt={`${name} photo ${index + 1}`}
+            fill
+            className="object-cover select-none"
+            sizes="(max-width: 640px) 100vw, 66vw"
+            priority={index === 0}
+          />
+        </motion.div>
+      </div>
+      {/* Controls */}
+      {count > 1 && (
+        <>
+          <button
+            aria-label="Previous image"
+            onClick={prev}
+            className="absolute grid text-white -translate-y-1/2 rounded-full left-3 top-1/2 h-9 w-9 place-items-center bg-black/50 hover:bg-black/60"
+          >
+            ‹
+          </button>
+          <button
+            aria-label="Next image"
+            onClick={next}
+            className="absolute grid text-white -translate-y-1/2 rounded-full right-3 top-1/2 h-9 w-9 place-items-center bg-black/50 hover:bg-black/60"
+          >
+            ›
+          </button>
+          <div className="absolute left-0 right-0 flex justify-center gap-1.5 bottom-3">
+            {images.map((_, i) => (
+              <button
+                key={i}
+                aria-label={`Go to image ${i + 1}`}
+                onClick={() => setIndex(i)}
+                className={`h-1.5 rounded-full transition-all ${i === index ? "w-6 bg-white" : "w-2 bg-white/60"}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
 
 export default function ClassDetailsPage({ params }: { params: { slug: string } }) {
   const [classData, setClassData] = useState<ClassDetail | null>(null);
@@ -60,7 +156,8 @@ export default function ClassDetailsPage({ params }: { params: { slug: string } 
         caloriesBurned,
         keyBenefits[]{ benefitText, "iconUrl": icon.asset->url },
         whatToBring[]{ itemText, "iconUrl": icon.asset->url },
-        schedule[]{ day, startTime, endTime, instructor->{name} }
+        schedule[]{ day, startTime, endTime, instructor->{name} },
+        gallery[]{ "url": asset->url }
       }`;
 
       const data = await client.fetch<ClassDetail>(query, { slug: params.slug });
@@ -79,6 +176,11 @@ export default function ClassDetailsPage({ params }: { params: { slug: string } 
       {/* Hero */}
       <section className="relative">
         <div className="container px-4 pt-10 pb-6 mx-auto sm:pt-14">
+          <div className="mb-3">
+            <a href="/classes" className="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100">
+              <span aria-hidden>←</span> Back to classes
+            </a>
+          </div>
           <div className="grid items-start gap-10 lg:grid-cols-3">
             {/* Image */}
             <motion.div
@@ -123,15 +225,14 @@ export default function ClassDetailsPage({ params }: { params: { slug: string } 
                   <Stat label="Calories" value={classData.caloriesBurned} />
                 </div>
 
-                {classData.keyBenefits && classData.keyBenefits.length > 0 && (
-                  <div>
-                    <h3 className="mb-2 text-sm font-bold tracking-wide text-gray-900 uppercase dark:text-gray-100">
-                      Key benefits
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {classData.keyBenefits.map((b) => (
-                        <InfoChip key={b.benefitText} text={b.benefitText} iconUrl={b.iconUrl} />
-                      ))}
+                {/* Benefits moved below into larger panels */}
+
+                {/* Moved Description/Overview here between stats and CTA */}
+                {classData.description && (
+                  <div className="p-4 border rounded-2xl border-black/5 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur">
+                    <h3 className="mb-2 text-sm font-extrabold text-gray-900 dark:text-gray-100">Overview</h3>
+                    <div className="pr-1 overflow-y-auto text-sm leading-relaxed text-gray-800 dark:text-gray-100 max-h-56">
+                      <PortableText value={classData.description} />
                     </div>
                   </div>
                 )}
@@ -153,31 +254,55 @@ export default function ClassDetailsPage({ params }: { params: { slug: string } 
       {/* Content */}
       <section className="container px-4 pb-20 mx-auto">
         <div className="grid gap-12 lg:grid-cols-3">
-          {/* Description */}
-          <div className="lg:col-span-2">
-            <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:scroll-mt-24">
-              <PortableText value={classData.description} />
-            </div>
+          {/* Left column */}
+          <div className="order-2 lg:order-1 lg:col-span-2">
+            {/* Prominent Benefits & What to Bring */}
+            {(!!classData.keyBenefits?.length || !!classData.whatToBring?.length) && (
+              <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
+                {classData.keyBenefits && classData.keyBenefits.length > 0 && (
+                  <div className="p-6 border rounded-2xl border-black/5 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur">
+                    <h2 className="text-xl font-extrabold text-gray-900 sm:text-2xl dark:text-gray-100">Health Benefits</h2>
+                    <div className="mt-4 space-y-2 sm:space-y-3">
+                      {classData.keyBenefits.map((b) => (
+                        <LargeInfoItem key={b.benefitText} text={b.benefitText} iconUrl={b.iconUrl} />
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-            {/* What to bring */}
-            {classData.whatToBring && classData.whatToBring.length > 0 && (
-              <div className="mt-10">
-                <h2 className="mb-3 text-xl font-bold text-gray-900 dark:text-gray-100">
-                  What to bring
-                </h2>
-                <div className="flex flex-wrap gap-2">
-                  {classData.whatToBring.map((i) => (
-                    <InfoChip key={i.itemText} text={i.itemText} iconUrl={i.iconUrl} />
-                  ))}
+                {classData.whatToBring && classData.whatToBring.length > 0 && (
+                  <div className="p-6 border rounded-2xl border-black/5 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur">
+                    <h2 className="text-xl font-extrabold text-gray-900 sm:text-2xl dark:text-gray-100">What To Bring</h2>
+                    <div className="mt-4 space-y-2 sm:space-y-3">
+                      {classData.whatToBring.map((i) => (
+                        <LargeInfoItem key={i.itemText} text={i.itemText} iconUrl={i.iconUrl} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Gallery (moved below benefits/bring) */}
+            {classData.gallery && classData.gallery.length > 0 && (
+              <div className="mt-8">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-extrabold text-gray-900 sm:text-2xl dark:text-gray-100">Gallery</h2>
+                  <span className="text-xs text-gray-500">{classData.gallery.length} photos</span>
+                </div>
+                <div className="mt-4">
+                  <GalleryCarousel images={classData.gallery} name={classData.name} />
                 </div>
               </div>
             )}
+
+            {/* (Description moved to sidebar above CTA) */}
           </div>
 
           {/* Schedule */}
-          <div id="schedule" className="lg:col-span-1">
+          <div id="schedule" className="order-1 lg:order-2 lg:col-span-1">
             <div className="p-4 border rounded-2xl border-black/5 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur">
-              <h3 className="mb-3 text-lg font-bold text-gray-900 dark:text-gray-100">Weekly schedule</h3>
+              <h3 className="mb-3 text-lg font-extrabold text-gray-900 dark:text-gray-100">Weekly Schedule</h3>
               {classData.schedule && classData.schedule.length > 0 ? (
                 <ul className="space-y-2">
                   {classData.schedule.map((slot) => (

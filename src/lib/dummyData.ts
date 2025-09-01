@@ -33,7 +33,7 @@ export type Drink = {
 export type Class = {
   name: string;
   tagline: string;
-  description: any[]; // Sanity's block content
+  description: unknown[]; // Sanity's block content
   mainImageUrl: string;
   intensityLevel: string;
   duration: number;
