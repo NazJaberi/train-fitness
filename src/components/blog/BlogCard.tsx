@@ -13,7 +13,7 @@ export function BlogCard({ post, large = false }: { post: BlogCardType; large?: 
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.35 }}
-      className={`group overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-xl ${large ? 'md:col-span-2' : ''}`}
+      className={`group overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-xl ${large ? 'md:col-span-2 self-start h-fit' : ''}`}
     >
       <Link href={`/blog/${post.slug}`} className="block">
         <div className={`relative ${large ? 'h-80' : 'h-56'} w-full overflow-hidden`}>
@@ -35,10 +35,7 @@ export function BlogCard({ post, large = false }: { post: BlogCardType; large?: 
             </p>
           </div>
         </div>
-        {/* Keep cards compact; skip excerpt on featured */}
-        {!large && post.excerpt && (
-          <p className="px-4 pb-4 pt-3 text-sm text-white/80">{post.excerpt}</p>
-        )}
+        {/* Keep cards compact: remove excerpts entirely for a tidy grid */}
       </Link>
     </motion.article>
   );
