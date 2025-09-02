@@ -47,6 +47,7 @@ const Navbar = () => {
             ["/coaches", "Coaches"],
             ["/pricing", "Pricing"],
             ["/transformations", "Transformations"],
+            ["/community", "Community"],
             ["/faq", "FAQ"],
           ].map(([href, label], i) => (
             <motion.li key={href}
@@ -97,15 +98,16 @@ const Navbar = () => {
               <button onClick={() => setOpen(false)} className="grid h-9 w-9 place-items-center rounded-md border border-white/20 text-white" aria-label="Close menu">×</button>
             </div>
             <nav className="space-y-2">
-              {[
-                ["/", "Home"],
-                ["/about", "About"],
-                ["/classes", "Classes"],
-                ["/coaches", "Coaches"],
-                ["/pricing", "Pricing"],
-                ["/transformations", "Transformations"],
-                ["/faq", "FAQ"],
-              ].map(([href, label]) => (
+            {[
+              ["/", "Home"],
+              ["/about", "About"],
+              ["/classes", "Classes"],
+              ["/coaches", "Coaches"],
+              ["/pricing", "Pricing"],
+              ["/transformations", "Transformations"],
+              ["/community", "Community"],
+              ["/faq", "FAQ"],
+            ].map(([href, label]) => (
                 <Link key={href} href={href} onClick={() => setOpen(false)} className="block rounded-lg px-3 py-2 text-white/90 hover:bg-white/10">
                   {label}
                 </Link>
