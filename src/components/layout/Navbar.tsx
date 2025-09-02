@@ -34,6 +34,9 @@ const Navbar = () => {
             <Link href="/coaches" className="font-medium text-brandTextLight dark:text-brandTextDark hover:text-brandPrimary">Coaches</Link>
           </li>
           <li>
+            <Link href="/pricing" className="font-medium text-brandTextLight dark:text-brandTextDark hover:text-brandPrimary">Pricing</Link>
+          </li>
+          <li>
             <Link href="/transformations" className="font-medium text-brandTextLight dark:text-brandTextDark hover:text-brandPrimary">Transformations</Link>
           </li>
           <li>
