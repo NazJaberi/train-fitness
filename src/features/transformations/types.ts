@@ -1,5 +1,16 @@
 // src/features/transformations/types.ts
-export type Transformation = { /* ... your existing type ... */ };
+export type Transformation = {
+  _id: string;
+  memberName: string;
+  slug?: string;
+  beforeImageUrl: string;
+  afterImageUrl: string;
+  testimonialQuote: string;
+  keyStats?: {
+    statValue: string;
+    statLabel: string;
+  }[];
+};
 
 export type TransformationDetails = {
   memberName: string;

@@ -11,27 +11,33 @@ import { type Transformation } from "@/features/transformations/types";
 export default function TransformationsPage() {
   const [stories, setStories] = useState<Transformation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchStories = async () => {
-      const sanityStories = await client.fetch<Transformation[]>(TRANSFORMATIONS_QUERY);
-      setStories(sanityStories ?? []);
-      setIsLoading(false);
+      try {
+        const sanityStories = await client.fetch<Transformation[]>(TRANSFORMATIONS_QUERY);
+        setStories(sanityStories ?? []);
+      } catch (err) {
+        console.error("Failed to fetch transformations:", err);
+        setError("Could not load transformations right now. Please try again later.");
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchStories();
   }, []);
 
   if (isLoading) return <LoadingScreen />;
+  if (error) return <div className="py-24 text-center text-red-500">{error}</div>;
 
   return (
-    <div className="transition-colors duration-300 bg-brandBgLight dark:bg-brandBgDark">
+    <div className="min-h-screen bg-black">
       <div className="container px-4 py-20 mx-auto">
         <div className="mb-12 text-center">
-          <h1 className="text-5xl font-extrabold text-brandTextLight dark:text-brandTextDark">
-            Real Members, Real Results
-          </h1>
-          <p className="max-w-2xl mx-auto mt-4 text-lg text-gray-500 dark:text-gray-400">
-            See the incredible transformations our members have achieved with the help of our dedicated coaches and supportive community.
+          <h1 className="text-5xl sm:text-6xl font-extrabold uppercase tracking-tight text-white">Transformations</h1>
+          <p className="mx-auto mt-3 max-w-2xl text-sm sm:text-base font-semibold uppercase tracking-wide text-cyan-400">
+            Real members. Real results.
           </p>
         </div>
 
@@ -42,8 +48,8 @@ export default function TransformationsPage() {
         </div>
 
         <div className="mt-20 text-center">
-          <h2 className="text-3xl font-bold text-brandTextLight dark:text-brandTextDark">Ready for Your Own Transformation?</h2>
-          <a href="/pricing" className="inline-block px-8 py-3 mt-6 text-lg font-bold text-white transition-all duration-300 rounded-full shadow-lg bg-brandPrimary hover:bg-brandAccent hover:text-brandDark">
+          <h2 className="text-3xl font-extrabold text-white">Ready for Your Own Transformation?</h2>
+          <a href="/pricing" className="mt-6 inline-block rounded-full bg-cyan-500 px-8 py-3 text-lg font-bold text-black transition-colors hover:bg-cyan-400">
             View Membership Plans
           </a>
         </div>
