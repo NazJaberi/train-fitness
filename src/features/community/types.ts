@@ -8,6 +8,7 @@ export type CommunityEvent = {
   location?: string;
   imageUrl?: string;
   summary?: string;
+  description?: any; // PortableText
   ctaLabel?: string;
   ctaHref?: string;
   tags?: string[];
@@ -22,6 +23,7 @@ export type CommunityChallenge = {
   imageUrl?: string;
   summary?: string;
   reward?: string;
+  rules?: any; // PortableText
   ctaLabel?: string;
   ctaHref?: string;
   tags?: string[];
@@ -33,5 +35,5 @@ export type MemberHighlight = {
   slug?: string;
   photoUrl?: string;
   headline?: string;
+  story?: any; // PortableText
 };
-

@@ -11,6 +11,7 @@ export const COMMUNITY_EVENTS_QUERY = groq`
     location,
     "imageUrl": image.asset->url,
     summary,
+    description,
     ctaLabel,
     ctaHref,
     tags
@@ -26,6 +27,7 @@ export const COMMUNITY_CHALLENGES_QUERY = groq`
     endDate,
     "imageUrl": image.asset->url,
     summary,
+    rules,
     reward,
     ctaLabel,
     ctaHref,
@@ -39,7 +41,7 @@ export const MEMBER_HIGHLIGHTS_QUERY = groq`
     memberName,
     "slug": slug.current,
     "photoUrl": photo.asset->url,
-    headline
+    headline,
+    story
   }
 `;
-
