@@ -1,20 +1,15 @@
 // src/components/layout/Navbar.tsx
 "use client";
 
-import { useTheme } from "@/components/theme/ThemeContext";
-import ThemeToggle from "@/components/theme/ThemeToggle";
+// Dark-mode only: theme context removed
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 const Navbar = () => {
-  const { theme } = useTheme();
-
-  // Define which logo to use based on the current theme
-  const logoSrc = theme === 'light'
-    ? '/logo-dark.jpg'  // The logo with dark text for light backgrounds
-    : '/logo-light.jpg'; // The logo with light text for dark backgrounds
+  // Dark-mode only logo
+  const logoSrc = '/logo-light.jpg';
 
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -68,7 +63,7 @@ const Navbar = () => {
           <Link href="/pricing" className="hidden rounded-full bg-cyan-500 px-6 py-2 font-bold text-black transition-colors hover:bg-cyan-400 sm:block">
             Join Now
           </Link>
-          <ThemeToggle />
+          {/* Theme toggle removed for dark-only site */}
           {/* Mobile menu button */}
           <button
             className="grid h-10 w-10 place-items-center rounded-md border border-white/20 text-white md:hidden"

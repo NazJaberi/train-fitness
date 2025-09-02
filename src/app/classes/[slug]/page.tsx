@@ -169,15 +169,15 @@ export default function ClassDetailsPage({ params }: { params: { slug: string } 
   }, [params.slug]);
 
   if (isLoading) return <LoadingScreen />;
-  if (!classData) return <div className="py-24 text-center">Class not found.</div>;
+  if (!classData) return <div className="py-24 text-center text-white">Class not found.</div>;
 
   return (
-    <div className="min-h-screen transition-colors duration-300 bg-gradient-to-b from-brandBgLight to-white dark:from-brandBgDark dark:to-black">
+    <div className="min-h-screen bg-black">
       {/* Hero */}
       <section className="relative">
         <div className="container px-4 pt-10 pb-6 mx-auto sm:pt-14">
           <div className="mb-3">
-            <a href="/classes" className="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100">
+            <a href="/classes" className="inline-flex items-center gap-1 text-sm text-white/70 hover:text-white">
               <span aria-hidden>←</span> Back to classes
             </a>
           </div>
@@ -187,7 +187,7 @@ export default function ClassDetailsPage({ params }: { params: { slug: string } 
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="relative overflow-hidden border rounded-3xl border-black/5 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur lg:col-span-2"
+              className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur lg:col-span-2"
             >
               <div className="relative h-[360px] w-full sm:h-[460px]">
                 {classData.mainImageUrl ? (
@@ -203,7 +203,7 @@ export default function ClassDetailsPage({ params }: { params: { slug: string } 
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4">
-                  <div className="inline-flex items-center px-2.5 py-1 text-[11px] font-semibold tracking-wider uppercase rounded-full bg-white/80 dark:bg-black/60 text-gray-800 dark:text-gray-100">
+                  <div className="inline-flex items-center rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-white">
                     {classData.intensityLevel ?? "Fitness"}
                   </div>
                   <h1 className="mt-3 text-3xl font-extrabold text-white sm:text-4xl">
@@ -229,9 +229,9 @@ export default function ClassDetailsPage({ params }: { params: { slug: string } 
 
                 {/* Moved Description/Overview here between stats and CTA */}
                 {classData.description && (
-                  <div className="p-4 border rounded-2xl border-black/5 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur">
-                    <h3 className="mb-2 text-sm font-extrabold text-gray-900 dark:text-gray-100">Overview</h3>
-                    <div className="pr-1 overflow-y-auto text-sm leading-relaxed text-gray-800 dark:text-gray-100 max-h-56">
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+                    <h3 className="mb-2 text-sm font-extrabold text-white">Overview</h3>
+                    <div className="max-h-56 overflow-y-auto pr-1 text-sm leading-relaxed text-white/90">
                       <PortableText value={classData.description} />
                     </div>
                   </div>
@@ -252,7 +252,7 @@ export default function ClassDetailsPage({ params }: { params: { slug: string } 
       </section>
 
       {/* Content */}
-      <section className="container px-4 pb-20 mx-auto">
+      <section className="container mx-auto px-4 pb-20">
         <div className="grid gap-12 lg:grid-cols-3">
           {/* Left column */}
           <div className="order-2 lg:order-1 lg:col-span-2">
@@ -260,8 +260,8 @@ export default function ClassDetailsPage({ params }: { params: { slug: string } 
             {(!!classData.keyBenefits?.length || !!classData.whatToBring?.length) && (
               <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
                 {classData.keyBenefits && classData.keyBenefits.length > 0 && (
-                  <div className="p-6 border rounded-2xl border-black/5 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur">
-                    <h2 className="text-xl font-extrabold text-gray-900 sm:text-2xl dark:text-gray-100">Health Benefits</h2>
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+                    <h2 className="text-xl font-extrabold text-white sm:text-2xl">Health Benefits</h2>
                     <div className="mt-4 space-y-2 sm:space-y-3">
                       {classData.keyBenefits.map((b) => (
                         <LargeInfoItem key={b.benefitText} text={b.benefitText} iconUrl={b.iconUrl} />
@@ -271,8 +271,8 @@ export default function ClassDetailsPage({ params }: { params: { slug: string } 
                 )}
 
                 {classData.whatToBring && classData.whatToBring.length > 0 && (
-                  <div className="p-6 border rounded-2xl border-black/5 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur">
-                    <h2 className="text-xl font-extrabold text-gray-900 sm:text-2xl dark:text-gray-100">What To Bring</h2>
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+                    <h2 className="text-xl font-extrabold text-white sm:text-2xl">What To Bring</h2>
                     <div className="mt-4 space-y-2 sm:space-y-3">
                       {classData.whatToBring.map((i) => (
                         <LargeInfoItem key={i.itemText} text={i.itemText} iconUrl={i.iconUrl} />
@@ -287,8 +287,8 @@ export default function ClassDetailsPage({ params }: { params: { slug: string } 
             {classData.gallery && classData.gallery.length > 0 && (
               <div className="mt-8">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-extrabold text-gray-900 sm:text-2xl dark:text-gray-100">Gallery</h2>
-                  <span className="text-xs text-gray-500">{classData.gallery.length} photos</span>
+                  <h2 className="text-xl font-extrabold text-white sm:text-2xl">Gallery</h2>
+                  <span className="text-xs text-white/60">{classData.gallery.length} photos</span>
                 </div>
                 <div className="mt-4">
                   <GalleryCarousel images={classData.gallery} name={classData.name} />
@@ -301,28 +301,28 @@ export default function ClassDetailsPage({ params }: { params: { slug: string } 
 
           {/* Schedule */}
           <div id="schedule" className="order-1 lg:order-2 lg:col-span-1">
-            <div className="p-4 border rounded-2xl border-black/5 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur">
-              <h3 className="mb-3 text-lg font-extrabold text-gray-900 dark:text-gray-100">Weekly Schedule</h3>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+              <h3 className="mb-3 text-lg font-extrabold text-white">Weekly Schedule</h3>
               {classData.schedule && classData.schedule.length > 0 ? (
                 <ul className="space-y-2">
                   {classData.schedule.map((slot) => (
-                    <li key={`${slot.day}-${slot.startTime}`} className="p-3 border rounded-xl bg-white/80 dark:bg-white/5 border-black/5 dark:border-white/10">
+                    <li key={`${slot.day}-${slot.startTime}`} className="rounded-xl border border-white/10 bg-white/5 p-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                        <span className="text-sm font-semibold text-white">
                           {slot.day}
                         </span>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-white/70">
                           {slot.startTime} – {slot.endTime}
                         </span>
                       </div>
                       {slot.instructor?.name && (
-                        <div className="mt-1 text-xs text-gray-500">Instructor: {slot.instructor.name}</div>
+                        <div className="mt-1 text-xs text-white/70">Instructor: {slot.instructor.name}</div>
                       )}
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="text-sm text-gray-500">No schedule published yet.</p>
+                <p className="text-sm text-white/70">No schedule published yet.</p>
               )}
             </div>
           </div>

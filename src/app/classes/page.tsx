@@ -82,16 +82,16 @@ export default function ClassesPage() {
   if (error) return <div className="py-20 text-center text-red-500">{error}</div>;
 
   return (
-    <div className="min-h-screen transition-colors duration-300 bg-gradient-to-b from-brandBgLight to-white dark:from-brandBgDark dark:to-black">
+    <div className="min-h-screen bg-black">
       {/* Hero */}
       <section className="relative">
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(40rem_40rem_at_50%_-10%,theme(colors.brandPrimary/30),transparent_60%)]" />
         <div className="container px-4 pb-8 mx-auto pt-14 sm:pt-20">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-brandTextLight dark:text-brandTextDark">
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-white">
               Find Your Next Class
             </h1>
-            <p className="mt-4 text-base leading-relaxed text-gray-600 dark:text-gray-300">
+            <p className="mt-4 text-base leading-relaxed text-white/80">
               From high-intensity training to mindful yoga—discover sessions that match your goals and vibe.
             </p>
 
@@ -103,13 +103,13 @@ export default function ClassesPage() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search by class or focus..."
-                  className="w-full px-4 py-3 text-sm border rounded-2xl bg-white/70 dark:bg-white/5 backdrop-blur border-black/5 dark:border-white/10 focus:outline-none focus:ring-4 ring-brandPrimary/30"
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/50 focus:outline-none focus:ring-4 ring-cyan-500/30"
                 />
-                <span className="absolute hidden text-xs text-gray-400 -translate-y-1/2 select-none right-3 top-1/2 sm:block">⌘K</span>
+                <span className="absolute right-3 top-1/2 hidden -translate-y-1/2 select-none text-xs text-white/40 sm:block">⌘K</span>
                 {query && (
                   <button
                     onClick={() => setQuery("")}
-                    className="absolute px-2 py-1 text-xs transition-colors -translate-y-1/2 rounded-md right-2 top-1/2 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md px-2 py-1 text-xs text-white/80 transition-colors hover:bg-white/10"
                     aria-label="Clear search"
                   >
                     Clear
@@ -125,10 +125,10 @@ export default function ClassesPage() {
                   <button
                     key={lvl}
                     onClick={() => setActiveIntensity(lvl)}
-                    className={`px-3 py-1.5 text-xs font-semibold rounded-full border transition-colors backdrop-blur ${
+                    className={`rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition-colors ${
                       activeIntensity === lvl
-                        ? "text-white bg-brandPrimary border-brandPrimary"
-                        : "text-gray-700 dark:text-gray-300 border-black/5 dark:border-white/10 bg-white/60 dark:bg-white/5 hover:bg-white/80"
+                        ? "bg-cyan-500 text-black border-cyan-500"
+                        : "bg-white/5 text-white/80 border-white/10 hover:bg-white/10"
                     }`}
                   >
                     {lvl}
@@ -141,9 +141,9 @@ export default function ClassesPage() {
       </section>
 
       {/* Grid */}
-      <section className="container px-4 pb-20 mx-auto">
+      <section className="container mx-auto px-4 pb-20">
         {fullyFiltered.length === 0 ? (
-          <p className="pt-20 text-center text-gray-500 dark:text-gray-400">
+          <p className="pt-20 text-center text-white/70">
             No classes match your filters.
           </p>
         ) : (
@@ -154,7 +154,7 @@ export default function ClassesPage() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.04 }}
-                className="relative overflow-hidden transition-shadow border shadow-sm group rounded-3xl border-black/5 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur hover:shadow-xl"
+                className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-sm transition-shadow hover:shadow-xl"
               >
                 <Link href={`/classes/${c.slug}`} className="block focus:outline-none focus-visible:ring-4 ring-brandPrimary/30 rounded-3xl">
                   <div className="relative w-full h-56">
@@ -173,14 +173,14 @@ export default function ClassesPage() {
 
                     {/* Overlay gradient + badge */}
                     <div className="absolute inset-0 transition-opacity bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-70 group-hover:opacity-80" />
-                    <div className="absolute flex gap-2 left-4 top-4">
+                    <div className="absolute left-4 top-4 flex gap-2">
                       {c.intensityLevel && (
-                        <span className="text-[11px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-full bg-white/80 dark:bg-black/60 text-gray-800 dark:text-gray-100">
+                        <span className="rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-white">
                           {c.intensityLevel}
                         </span>
                       )}
                       {typeof c.duration === "number" && (
-                        <span className="text-[11px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-full bg-white/80 dark:bg-black/60 text-gray-800 dark:text-gray-100">
+                        <span className="rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-white">
                           {c.duration} min
                         </span>
                       )}
@@ -188,17 +188,17 @@ export default function ClassesPage() {
                   </div>
 
                   <div className="p-5">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                    <h3 className="text-lg font-bold text-white">
                       {c.name}
                     </h3>
                     {c.tagline && (
-                      <p className="mt-1 text-sm leading-relaxed text-gray-600 line-clamp-2 dark:text-gray-300">
+                      <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-white/80">
                         {c.tagline}
                       </p>
                     )}
 
                     <div className="flex items-center justify-between mt-5">
-                      <div className="text-xs text-gray-500">Tap to view details</div>
+                      <div className="text-xs text-white/70">Tap to view details</div>
                       <div className="inline-flex items-center gap-1 text-sm font-semibold transition-transform group-hover:translate-x-1">
                         View <span aria-hidden>→</span>
                       </div>
