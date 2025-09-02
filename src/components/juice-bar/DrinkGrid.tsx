@@ -57,8 +57,13 @@ const DrinkGrid = forwardRef<HTMLElement, DrinkGridProps>(
     }, [selectedDrink]);
 
     return (
-      <section ref={ref} className="py-20 transition-colors duration-300 bg-brandBgLight dark:bg-brandBgDark">
-        <div className="container px-4 mx-auto">
+      <section ref={ref} className="relative bg-black py-20">
+        {/* Cyan glows background */}
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-cyan-500/10 blur-[120px]" />
+          <div className="absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-cyan-400/10 blur-[120px]" />
+        </div>
+        <div className="container relative mx-auto px-4">
           <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
             {drinkRows.map((row, rowIndex) => (
               <div key={rowIndex} className="contents">

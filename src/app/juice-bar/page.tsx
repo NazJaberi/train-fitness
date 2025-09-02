@@ -90,9 +90,9 @@ export default function Home() {
   if (isLoading) return <LoadingScreen />;
 
   return (
-    <>
+    <div className="bg-black text-white">
       <HeroSection onExploreClick={handleScrollToDrinks} />
-      <div className="container px-4 mx-auto">
+      <div className="container mx-auto px-4">
         <FilterBar
           activeType={activeType}
           onTypeChange={handleTypeChange}
@@ -106,6 +106,6 @@ export default function Home() {
         onCardClick={handleCardClick}
         selectedDrink={selectedDrink}
       />
-    </>
+    </div>
   );
 }

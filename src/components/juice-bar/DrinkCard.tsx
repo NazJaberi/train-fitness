@@ -52,11 +52,11 @@ export const DrinkCard = ({ drink, onClick, isSelected }: DrinkCardProps) => {
   });
 
   return (
-    <motion.div className="flex flex-col items-center justify-end h-96">
+    <motion.div className="flex h-96 flex-col items-center justify-end">
       <motion.button
         type="button"
         onClick={onClick}
-        className="relative w-full cursor-pointer h-80 focus:outline-none"
+        className="relative h-80 w-full cursor-pointer focus:outline-none"
         onHoverStart={() => setIsHovered(true)}
         onHoverEnd={() => setIsHovered(false)}
         onFocus={() => setIsHovered(true)}
@@ -100,7 +100,7 @@ export const DrinkCard = ({ drink, onClick, isSelected }: DrinkCardProps) => {
         </motion.div>
       </motion.button>
 
-      <h3 className="mt-4 text-lg font-bold text-center text-brandTextLight dark:text-brandTextDark">
+      <h3 className="mt-4 text-center text-lg font-bold text-white">
         {drink.name}
       </h3>
     </motion.div>

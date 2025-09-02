@@ -70,7 +70,7 @@ export const DrinkDetails = ({ drink }: { drink: Drink }) => {
       transition={{ duration: 0.45, ease: "easeInOut" }}
       className="col-span-1 overflow-hidden md:col-span-2 lg:col-span-4"
     >
-      <div className="shadow-xl rounded-2xl bg-brandBgLight dark:bg-brandDark">
+      <div className="rounded-2xl border border-white/10 bg-white/5 shadow-xl">
         <AnimatePresence mode="wait">
           {isBlending ? (
             <motion.div key="blending" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -87,15 +87,15 @@ export const DrinkDetails = ({ drink }: { drink: Drink }) => {
               {/* --- TOP SECTION --- */}
               <div className="flex flex-col gap-6 p-4 sm:p-6 md:p-8 md:flex-row md:items-start">
                 <div className="w-full md:w-1/2">
-                  <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl text-brandTextLight dark:text-brandTextDark">
+                  <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:text-5xl">
                     {drink.name}
                   </h2>
-                  <p className="mt-2 text-sm font-medium sm:text-base text-brandPrimary">
+                  <p className="mt-2 text-sm font-medium text-cyan-400 sm:text-base">
                     {drink.ingredients?.join(", ")}
                   </p>
                   <div className="flex flex-wrap gap-2 mt-4">
                     {drink.healthBenefits?.map((b) => (
-                      <span key={b} className="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-brandPrimary/10 text-brandPrimary ring-1 ring-brandPrimary/20">
+                      <span key={b} className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white ring-1 ring-white/10">
                         {b}
                       </span>
                     ))}
@@ -117,17 +117,17 @@ export const DrinkDetails = ({ drink }: { drink: Drink }) => {
 
               {/* --- NUTRITION --- */}
               {activeNutrition && (
-                <div className="p-4 sm:p-6 md:p-8 bg-green-500/85">
+                <div className="p-4 sm:p-6 md:p-8 border border-cyan-500/20 bg-white/5 rounded-2xl">
                   <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between">
                     <h3 className="text-sm font-extrabold tracking-wider text-white sm:text-base">SERVING SIZE</h3>
-                    <div className="inline-flex p-1 rounded-md bg-white/10">
+                    <div className="inline-flex rounded-md bg-white/10 p-1">
                       {drink.nutritionByServingSize.map((n) => (
                         <button
                           key={n.servingSize}
                           onClick={() => handleSizeChange(n.servingSize)}
                           className={`px-3 py-1.5 text-xs sm:text-sm rounded-md font-bold transition ${
                             activeNutrition.servingSize === n.servingSize
-                              ? "bg-white text-green-700 shadow"
+                              ? "bg-white text-cyan-700 shadow"
                               : "text-white/80 hover:bg-white/15"
                           }`}
                         >
@@ -136,7 +136,7 @@ export const DrinkDetails = ({ drink }: { drink: Drink }) => {
                       ))}
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 text-center sm:grid-cols-3 md:grid-cols-4 gap-y-6 gap-x-4">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-6 text-center sm:grid-cols-3 md:grid-cols-4">
                     <NutritionFact {...split(activeNutrition.energy)} label={`Energy (${activeNutrition.energy_cal})`} />
                     <NutritionFact {...split(activeNutrition.protein)} label="Protein" />
                     <NutritionFact {...split(activeNutrition.fatTotal)} label="Fat, total" />

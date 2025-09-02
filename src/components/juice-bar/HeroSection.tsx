@@ -11,7 +11,7 @@ type HeroSectionProps = {
 const HeroSection = ({ onExploreClick }: HeroSectionProps) => {
   return (
     // The main section now takes the full screen height and uses flexbox
-    <section className="relative flex flex-col w-full min-h-screen md:flex-row bg-brandBgLight dark:bg-brandBgDark">
+    <section className="relative flex w-full min-h-screen flex-col md:flex-row bg-black">
       {/* Left Side: Text Content (takes full width on mobile, half on desktop) */}
       <div className="flex items-center justify-center w-full p-8 md:w-1/2 md:p-12">
         <motion.div
@@ -20,19 +20,19 @@ const HeroSection = ({ onExploreClick }: HeroSectionProps) => {
           transition={{ duration: 0.8 }}
           className="max-w-xl text-center md:text-left"
         >
-          <h1 className="text-5xl font-extrabold leading-tight lg:text-7xl text-brandTextLight dark:text-brandTextDark">
-            Taste the <span className="text-brandPrimary">Freshness</span>,
+          <h1 className="text-5xl font-extrabold leading-tight lg:text-7xl text-white">
+            Taste the <span className="text-cyan-400">Freshness</span>,
             <br />
-            Feel the <span className="text-brandAccent">Boost</span>.
+            Feel the <span className="text-cyan-500">Boost</span>.
           </h1>
-          <p className="mt-6 text-lg text-gray-500 dark:text-gray-400">
+          <p className="mt-6 text-lg text-white/80">
             Discover vibrant, delicious, and healthy smoothies made from 100% natural ingredients. Your daily dose of goodness is just a sip away.
           </p>
           <motion.button
             onClick={onExploreClick}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-8 py-3 mt-8 text-lg font-bold text-white transition-all duration-300 rounded-full shadow-lg bg-brandPrimary hover:bg-brandAccent hover:text-brandDark"
+            className="mt-8 rounded-full bg-cyan-500 px-8 py-3 text-lg font-bold text-black shadow-lg transition-all duration-300 hover:bg-cyan-400"
           >
             Explore Drinks
           </motion.button>
@@ -48,8 +48,12 @@ const HeroSection = ({ onExploreClick }: HeroSectionProps) => {
           className="object-cover"
           priority // Tells Next.js to load this image first
         />
-        {/* Optional: Add a subtle overlay to the image */}
-        <div className="absolute inset-0 bg-black/10"></div>
+        {/* Dark overlay + cyan glow accents */}
+        <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/60 to-black/70" />
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-10 -right-10 h-72 w-72 rounded-full bg-cyan-500/20 blur-[120px]" />
+          <div className="absolute bottom-10 right-1/4 h-56 w-56 rounded-full bg-cyan-400/10 blur-[120px]" />
+        </div>
       </div>
     </section>
   );
