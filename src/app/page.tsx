@@ -1,18 +1,28 @@
 // src/app/page.tsx
-"use client";
-
-import { useEffect, useState } from "react";
+// Server component homepage (optimized)
+import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { FaDumbbell, FaHeartbeat, FaLeaf, FaUserShield } from "react-icons/fa";
 
 import { client } from "@/lib/sanityClient";
-import { LoadingScreen } from "@/components/layout/LoadingScreen";
+
+// Components (client under the hood)
+import { CoachCard } from "@/components/coaches/CoachCard";
+import { BlogCard } from "@/components/blog/BlogCard";
+import { PricingCard } from "@/components/pricing/PricingCard";
+import { EventCard } from "@/components/community/Cards";
+import { HeroCarousel } from "@/components/home/HeroCarousel";
+import { FeatureTiles } from "@/components/home/FeatureTiles";
+import { TransformationCard } from "@/components/transformations/TransformationCard";
+
+// Queries & types
+import { HOME_PAGE_QUERY } from "@/features/home/queries";
+import type { HomePageData } from "@/features/home/types";
 
 // Coaches
 import { COACH_LIST_QUERY } from "@/features/coaches/queries";
 import type { CoachCardData } from "@/features/coaches/types";
-import { CoachCarousel } from "@/components/coaches/CoachCarousel";
 
 // Classes
 import { CLASS_LIST_QUERY } from "@/features/classes/queries";
@@ -21,87 +31,248 @@ import type { ClassCardData } from "@/features/classes/types";
 // Transformations
 import { TRANSFORMATIONS_QUERY } from "@/features/transformations/queries";
 import type { Transformation } from "@/features/transformations/types";
-import { TransformationCard } from "@/components/transformations/TransformationCard";
 
 // Pricing
 import { PRICING_PLANS_QUERY } from "@/features/pricing/queries";
 import type { PricingPlan } from "@/features/pricing/types";
-import { PricingCard } from "@/components/pricing/PricingCard";
 
 // Blog
 import { BLOG_LIST_QUERY } from "@/features/blog/queries";
 import type { BlogCard as BlogCardType } from "@/features/blog/types";
-import { BlogCard } from "@/components/blog/BlogCard";
 
 // Community
 import { COMMUNITY_EVENTS_QUERY } from "@/features/community/queries";
 import type { CommunityEvent } from "@/features/community/types";
-import { EventCard } from "@/components/community/Cards";
-// Home
-import { HOME_PAGE_QUERY } from "@/features/home/queries";
-import type { HomePageData } from "@/features/home/types";
-import { HeroCarousel } from "@/components/home/HeroCarousel";
+// ----- Brand token -----
+const BRAND = { blue: "#0DBAF5" };
 
-export default function HomePage() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [home, setHome] = useState<HomePageData | null>(null);
+export const metadata: Metadata = {
+  title: "TRAIN FITNESS — Manama’s Premier Destination for Fitness & Wellness",
+  description:
+    "World-class coaching, electrifying classes, and a supportive community. Claim your free 3-day pass at TRAIN FITNESS.",
+  openGraph: {
+    title: "TRAIN FITNESS",
+    description:
+      "World-class coaching, electrifying classes, and a supportive community.",
+    type: "website",
+  },
+};
 
-  const [coaches, setCoaches] = useState<CoachCardData[]>([]);
-  const [classes, setClasses] = useState<ClassCardData[]>([]);
-  const [stories, setStories] = useState<Transformation[]>([]);
-  const [plans, setPlans] = useState<PricingPlan[]>([]);
-  const [posts, setPosts] = useState<BlogCardType[]>([]);
-  const [events, setEvents] = useState<CommunityEvent[]>([]);
+async function fetchHomeData() {
+  const [home, coaches, classes, stories, plans, posts, events] = await Promise.all([
+    client.fetch<HomePageData>(HOME_PAGE_QUERY),
+    client.fetch<CoachCardData[]>(COACH_LIST_QUERY),
+    client.fetch<ClassCardData[]>(CLASS_LIST_QUERY),
+    client.fetch<Transformation[]>(TRANSFORMATIONS_QUERY),
+    client.fetch<PricingPlan[]>(PRICING_PLANS_QUERY),
+    client.fetch<BlogCardType[]>(BLOG_LIST_QUERY),
+    client.fetch<CommunityEvent[]>(COMMUNITY_EVENTS_QUERY),
+  ]);
+  return { home, coaches, classes, stories, plans, posts, events };
+}
 
-  useEffect(() => {
-    const run = async () => {
-      try {
-        const [hp, co, cl, tr, pl, po, ev] = await Promise.all([
-          client.fetch<HomePageData>(HOME_PAGE_QUERY),
-          client.fetch<CoachCardData[]>(COACH_LIST_QUERY),
-          client.fetch<ClassCardData[]>(CLASS_LIST_QUERY),
-          client.fetch<Transformation[]>(TRANSFORMATIONS_QUERY),
-          client.fetch<PricingPlan[]>(PRICING_PLANS_QUERY),
-          client.fetch<BlogCardType[]>(BLOG_LIST_QUERY),
-          client.fetch<CommunityEvent[]>(COMMUNITY_EVENTS_QUERY),
-        ]);
-        setHome(hp || null);
-        setCoaches(co ?? []);
-        setClasses(cl ?? []);
-        setStories(tr ?? []);
-        setPlans(pl ?? []);
-        setPosts(po ?? []);
-        setEvents(ev ?? []);
-      } catch (e) {
-        console.error(e);
-        setError("Could not load home showcase data.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    run();
-  }, []);
+export default async function HomePage() {
+  const { home, coaches, classes, stories, plans, posts, events } = await fetchHomeData();
 
-  if (isLoading) return <LoadingScreen />;
-  if (error) return <div className="py-24 text-center text-red-500">{error}</div>;
+  const featuredCoaches = (coaches?.filter((c: any) => c.featured) ?? []).slice(0, 3);
+  const fallbackCoaches = (coaches ?? []).slice(0, 3);
+  const useCoaches = featuredCoaches.length === 3 ? featuredCoaches : fallbackCoaches;
 
-  const topClasses = classes.slice(0, 3);
-  const topPlans = (plans.filter(p => p.highlight).length ? plans.filter(p => p.highlight) : plans).slice(0, 3);
-  const topPosts = posts.slice(0, 3);
-  const topEvents = events.slice(0, 3);
-  const topStories = stories.slice(0, 2);
+  const latestPosts = [...(posts ?? [])]
+    .sort((a, b) => (new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime()))
+    .slice(0, 3);
+  const topClasses = (classes ?? []).slice(0, 6);
+  const topPlans = (((plans ?? []).filter((p) => p.highlight).length ? (plans ?? []).filter((p) => p.highlight) : (plans ?? []))).slice(0, 3);
+  const topEvents = (events ?? []).slice(0, 3);
+  const topStories = (stories ?? []).slice(0, 2);
+
+  // Prepare hero content (use first slide or sensible defaults)
+  const heroSlide = (home?.heroSlides && home.heroSlides[0]) || {
+    title: "Workout or Work Less",
+    tagline:
+      "World‑class coaching, electrifying classes, and a supportive community.",
+    imageUrl:
+      latestPosts?.[0]?.coverImageUrl ||
+      topClasses?.[0]?.imageUrl ||
+      useCoaches?.[0]?.photoUrl ||
+      "/placeholder-hero.jpg",
+  };
+
+  const expertCount = Math.max(coaches?.length || 0, 25);
 
   return (
     <div className="min-h-screen bg-black">
-      {/* HERO CAROUSEL fed by CMS */}
-      <HeroCarousel slides={(home?.heroSlides?.length ? home!.heroSlides : [{ imageUrl: posts[0]?.coverImageUrl || classes[0]?.imageUrl || coaches[0]?.photoUrl || '/placeholder-hero.jpg', title: 'Train Smarter. Get Stronger.', tagline: 'World‑class coaching, electrifying classes, and a supportive community.' }]) as any} />
+      {/* JSON-LD: LocalBusiness */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "HealthClub",
+            name: "TRAIN FITNESS",
+            url: "https://your-domain.example",
+            address: { "@type": "PostalAddress", addressLocality: "Manama", addressCountry: "BH" },
+          }),
+        }}
+      />
+
+      {/* HERO (custom layout inspired by reference; brand cyan accents) */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-black to-black" />
+        <div className="container relative mx-auto grid items-center gap-8 px-4 pt-16 pb-10 md:grid-cols-2 md:pt-20">
+          {/* Left copy */}
+          <div>
+            <div className="mb-2 text-xs font-extrabold uppercase tracking-widest text-white/60">
+              You are more than what you think
+            </div>
+            <h1 className="text-5xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-6xl">
+              {heroSlide.title || "Find Your Strength."}
+            </h1>
+            {heroSlide.tagline && (
+              <p className="mt-4 max-w-xl text-white/80">{heroSlide.tagline}</p>
+            )}
+            <div className="mt-6 flex flex-wrap gap-3">
+              {/* Scroll to benefit section */}
+              <a href="#benefit" className="rounded-full px-6 py-3 font-bold text-black" style={{ backgroundColor: BRAND.blue }}>
+                Get Started
+              </a>
+              <Link href={home?.secondaryCta?.href || "/classes"} className="rounded-full border border-white/20 px-6 py-3 font-bold text-white hover:bg-white/10">
+                {home?.secondaryCta?.label || "See Class Schedule"}
+              </Link>
+            </div>
+          </div>
+
+          {/* Right visual */}
+          <div className="relative mx-auto w-full max-w-md">
+            <div className="absolute -right-4 -top-4 h-28 w-28 rotate-6 rounded-lg" style={{ backgroundColor: "rgba(13,186,245,0.15)" }} />
+            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-2xl">
+              <div className="relative h-80 w-full sm:h-[420px]">
+                <Image src={heroSlide.imageUrl} alt={heroSlide.title || "Hero"} fill className="object-cover" priority sizes="(max-width: 768px) 100vw, 480px" />
+              </div>
+              <div className="absolute left-4 top-4 rounded-lg bg-black/60 px-3 py-2">
+                <div className="text-2xl font-extrabold text-white">{expertCount}+</div>
+                <div className="text-[11px] font-bold uppercase tracking-wider" style={{ color: BRAND.blue }}>
+                  Expert Trainers
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Three mini tiles under hero (use services if present) */}
+        {home?.services && home.services.length > 0 && (
+          <div className="container mx-auto -mt-4 grid gap-4 px-4 pb-10 md:-mt-8 md:grid-cols-3">
+            {home.services.slice(0, 3).map((s, i) => (
+              <a key={s.title + i} href={s.href || "#"} className={`block rounded-2xl border p-4 ${i < 2 ? 'border-cyan-500/20 bg-cyan-500/10' : 'border-white/10 bg-white/5'}`}>
+                <div className="text-3xl font-extrabold text-white/20">0{i + 1}</div>
+                <div className="mt-1 text-lg font-extrabold text-white">{s.title}</div>
+                {s.blurb && <p className="mt-1 text-sm text-white/80">{s.blurb}</p>}
+              </a>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Feature Tiles under hero */}
+      {home?.featureTiles && home.featureTiles.length > 0 && (
+        <FeatureTiles tiles={home.featureTiles} />
+      )}
+
+      {/* Services Overview */}
+      {home?.services && home.services.length > 0 && (
+        <section className="container mx-auto px-4 pb-12">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {home.services.slice(0,4).map((s, i) => (
+              <a key={s.title + i} href={s.href || '#'} className="group block rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10">
+                <div className="flex items-center gap-3">
+                  {s.iconUrl ? (
+                    <span className="relative inline-block h-10 w-10 overflow-hidden rounded-lg bg-white/10">
+                      <Image src={s.iconUrl} alt="" fill className="object-contain p-2" />
+                    </span>
+                  ) : (<span className="h-10 w-10 rounded-lg bg-white/10" />)}
+                  <div className="text-lg font-extrabold text-white">{s.title}</div>
+                </div>
+                {s.blurb && <p className="mt-2 text-sm text-white/80">{s.blurb}</p>}
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Divider */}
+      <div className="container mx-auto my-6 h-px bg-white/10" />
+
+      {/* Testimonials */}
+      {home?.testimonials && home.testimonials.length > 0 && (
+        <section className="container mx-auto px-4 pb-16">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-xl font-extrabold text-white">What our members say</h2>
+            <Link href="/transformations" className="text-sm font-bold text-cyan-400 hover:text-cyan-300">See Success Stories</Link>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {home.testimonials.slice(0,3).map((t, i) => (
+              <div key={(t.name||'')+i} className="rounded-3xl border border-white/10 bg-white/5 p-5">
+                <div className="flex items-center gap-3">
+                  {t.photoUrl && <span className="relative inline-block h-12 w-12 overflow-hidden rounded-full bg-white/10"><Image src={t.photoUrl} alt="" fill className="object-cover" /></span>}
+                  <div>
+                    <div className="font-bold text-white">{t.name}</div>
+                    {t.since && <div className="text-xs text-white/70">Member since {t.since}</div>}
+                  </div>
+                </div>
+                {t.quote && <p className="mt-3 text-sm text-white/90">“{t.quote}”</p>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Why Us Features */}
+      {home?.features && home.features.length > 0 && (
+        <section className="container mx-auto px-4 pb-16">
+          <h3 className="mb-6 text-center text-sm font-extrabold uppercase tracking-widest text-white/70">We give the best standards</h3>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            {home.features.slice(0,6).map((f, i) => (
+              <div key={(f.title||'')+i} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center">
+                {f.iconUrl && <span className="relative mx-auto block h-10 w-10 overflow-hidden rounded-lg bg-white/10"><Image src={f.iconUrl} alt="" fill className="object-contain p-2" /></span>}
+                <div className="mt-2 font-bold text-white">{f.title}</div>
+                {f.metric && <div className="text-xs text-cyan-400">{f.metric}</div>}
+                {f.description && <div className="text-xs text-white/70">{f.description}</div>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Highlight Card (Unlimited Group & PT) */}
+      <section id="benefit" className="container mx-auto px-4 pb-16">
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="rounded-3xl border border-white/10 bg-cyan-500/15 p-6 shadow-xl md:col-span-2">
+            <h3 className="text-2xl font-extrabold text-white sm:text-3xl">Unlimited Group & Personal Training</h3>
+            <p className="mt-2 max-w-xl text-sm text-white/80">Push harder with electrifying group sessions or get tailored 1:1 coaching to reach goals faster.</p>
+            <div className="mt-5 flex gap-3">
+              <Link href="/pricing" className="rounded-full bg-cyan-500 px-5 py-2 font-bold text-black hover:bg-cyan-400">View Plans</Link>
+              <Link href="/coaches" className="rounded-full border border-white/20 px-5 py-2 font-bold text-white hover:bg-white/10">Meet Coaches</Link>
+            </div>
+          </div>
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+            <div className="text-3xl font-extrabold text-white">500+</div>
+            <p className="mt-1 text-sm text-white/80">Members smashing their goals</p>
+          </div>
+        </div>
+      </section>
 
       {/* COACHES */}
-      {coaches.length > 0 && (
-        <section className="container mx-auto px-4 pb-10">
-          <h2 className="mb-4 text-center text-xl font-extrabold text-white">Our Team</h2>
-          <CoachCarousel coaches={coaches} />
+      {!!useCoaches.length && (
+        <section className="container mx-auto px-4 pb-16">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-xl font-extrabold text-white">Our Team</h2>
+            <Link href="/coaches" className="text-sm font-bold text-cyan-400 hover:text-cyan-300">Meet all coaches</Link>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {useCoaches.map((c) => (
+              <CoachCard key={c.slug} coach={c} />
+            ))}
+          </div>
         </section>
       )}
 
@@ -112,9 +283,9 @@ export default function HomePage() {
             <h2 className="text-xl font-extrabold text-white">Popular Classes</h2>
             <Link href="/classes" className="text-sm font-bold text-cyan-400 hover:text-cyan-300">View all</Link>
           </div>
-          <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2">
-            {topClasses.map((c, idx) => (
-              <motion.article key={c.slug} initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{delay:idx*0.04}} className="group relative h-64 w-72 flex-shrink-0 snap-start overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-sm">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {classes.slice(0, 6).map((c, idx) => (
+              <article key={c.slug} className="group relative h-56 overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-sm">
                 <Link href={`/classes/${c.slug}`} className="block h-full w-full">
                   <div className="relative h-full w-full">
                     {c.imageUrl ? (
@@ -131,11 +302,30 @@ export default function HomePage() {
                     </div>
                   </div>
                 </Link>
-              </motion.article>
+              </article>
             ))}
           </div>
         </section>
       )}
+
+      {/* Standards / Pillars */}
+      <section className="container mx-auto px-4 pb-16">
+        <h3 className="mb-6 text-center text-sm font-extrabold uppercase tracking-widest text-white/70">We set the highest standards</h3>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {[
+            { Icon: FaDumbbell, title: 'Elite Equipment', text: 'Train with premium gear.' },
+            { Icon: FaUserShield, title: 'Certified Coaches', text: 'Personal plans for results.' },
+            { Icon: FaHeartbeat, title: 'Holistic Approach', text: 'Strength, cardio, recovery.' },
+            { Icon: FaLeaf, title: 'Nutrition Guidance', text: 'Support to fuel progress.' },
+          ].map((f, i) => (
+            <div key={f.title} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center">
+              <f.Icon className="mx-auto h-6 w-6 text-cyan-400" />
+              <div className="mt-2 font-bold text-white">{f.title}</div>
+              <div className="text-xs text-white/70">{f.text}</div>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* TRANSFORMATIONS */}
       {topStories.length > 0 && (
@@ -177,14 +367,14 @@ export default function HomePage() {
       )}
 
       {/* BLOG (last) */}
-      {topPosts.length > 0 && (
+      {!!latestPosts.length && (
         <section className="container mx-auto px-4 pb-16">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-xl font-extrabold text-white">Latest from the Blog</h2>
             <Link href="/blog" className="text-sm font-bold text-cyan-400 hover:text-cyan-300">Read more</Link>
           </div>
-          <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2">
-            {topPosts.map((p) => (<BlogCard key={p._id} post={p} />))}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {latestPosts.map((p) => (<BlogCard key={p._id} post={p} />))}
           </div>
         </section>
       )}
@@ -195,7 +385,7 @@ export default function HomePage() {
           <h3 className="text-2xl font-extrabold text-white sm:text-3xl">Ready to start your journey?</h3>
           <p className="mt-2 text-white/80">Join TRAIN FITNESS today or take a VR Tour of our facilities.</p>
           <div className="mt-5 flex flex-wrap justify-center gap-3">
-            <Link href="/pricing" className="rounded-full bg-cyan-500 px-6 py-3 font-bold text-black hover:bg-cyan-400">Join Now</Link>
+            <Link href="/pricing" className="rounded-full px-6 py-3 font-bold text-black" style={{ backgroundColor: BRAND.blue }}>Join Now</Link>
             <Link href="/tour" className="rounded-full border border-white/20 px-6 py-3 font-bold text-white hover:bg-white/10">VR Tour</Link>
           </div>
         </div>

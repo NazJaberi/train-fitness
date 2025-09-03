@@ -7,8 +7,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 type Slide = { title?: string; tagline?: string; imageUrl: string };
+type CTA = { label?: string; href?: string };
 
-export function HeroCarousel({ slides }: { slides: Slide[] }) {
+export function HeroCarousel({ slides, primaryCta, secondaryCta }: { slides: Slide[]; primaryCta?: CTA; secondaryCta?: CTA }) {
   const [index, setIndex] = useState(0);
   const hasSlides = Array.isArray(slides) && slides.length > 0;
 
@@ -45,9 +46,8 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
             <p className="mt-4 max-w-xl text-white/80">{current.tagline}</p>
           )}
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/pricing" className="rounded-full bg-cyan-500 px-6 py-3 font-bold text-black hover:bg-cyan-400">Join Now</Link>
-            <Link href="/tour" className="rounded-full border border-white/20 px-6 py-3 font-bold text-white hover:bg-white/10">VR Tour</Link>
-            <Link href="/classes" className="rounded-full border border-white/20 px-6 py-3 font-bold text-white hover:bg-white/10">Explore Classes</Link>
+            <Link href={primaryCta?.href || "/pricing"} className="rounded-full bg-cyan-500 px-6 py-3 font-bold text-black hover:bg-cyan-400">{primaryCta?.label || 'Claim Free 3-Day Pass'}</Link>
+            <Link href={secondaryCta?.href || "/classes"} className="rounded-full border border-white/20 px-6 py-3 font-bold text-white hover:bg-white/10">{secondaryCta?.label || 'See Class Schedule'}</Link>
           </div>
         </div>
 
@@ -63,4 +63,3 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
     </section>
   );
 }
-

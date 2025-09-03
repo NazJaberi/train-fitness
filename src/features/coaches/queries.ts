@@ -7,7 +7,8 @@ export const COACH_LIST_QUERY = groq`
     name,
     "slug": slug.current,
     "photoUrl": photo.asset->url,
-    specialties
+    specialties,
+    featured
   }
 `;
 
