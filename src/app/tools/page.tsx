@@ -25,7 +25,7 @@ type ToolDef = {
   title: string;
   category: Category;
   keywords?: string[];
-  component?: () => JSX.Element;
+  component: () => ReactNode; // Changed to ReactNode
   description?: string;
 };
 
