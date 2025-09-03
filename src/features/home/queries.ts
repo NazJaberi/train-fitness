@@ -33,6 +33,11 @@ export const HOME_PAGE_QUERY = groq`
       name,
       since,
       quote
-    }
+    },
+    announcement{ label, text, href, cta },
+    highlight{ title, blurb },
+    memberCount,
+    yearsOfExperience,
+    classesPerWeek
   }
 `;

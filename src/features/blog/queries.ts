@@ -2,7 +2,7 @@
 import { groq } from 'next-sanity';
 
 export const BLOG_LIST_QUERY = groq`
-  *[_type == "blogPost"] | order(featured desc, publishedAt desc) {
+  *[_type == "blogPost"] | order(publishedAt desc) {
     _id,
     title,
     "slug": slug.current,
@@ -29,4 +29,3 @@ export const BLOG_DETAILS_QUERY = groq`
     content
   }
 `;
-

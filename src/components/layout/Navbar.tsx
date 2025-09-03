@@ -25,6 +25,7 @@ const Navbar = () => {
     { label: 'Classes', href: '/classes' },
     { label: 'Coaches', href: '/coaches' },
     { label: 'Pricing', href: '/pricing' },
+    { label: 'Tools', href: '/tools' },
     { label: 'Community', href: '/community' },
     { label: 'FAQ', href: '/faq' },
   ];

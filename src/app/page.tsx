@@ -58,6 +58,8 @@ export const metadata: Metadata = {
   },
 };
 
+export const revalidate = 60;
+
 async function fetchHomeData() {
   const [home, coaches, classes, stories, plans, posts, events] = await Promise.all([
     client.fetch<HomePageData>(HOME_PAGE_QUERY),
@@ -99,6 +101,7 @@ export default async function HomePage() {
   };
 
   const expertCount = Math.max(coaches?.length || 0, 25);
+  const memberCount = Math.max(home?.memberCount || 0, 500);
 
   return (
     <div className="min-h-screen bg-black">
@@ -116,80 +119,57 @@ export default async function HomePage() {
         }}
       />
 
-      {/* HERO (custom layout inspired by reference; brand cyan accents) */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-black to-black" />
-        <div className="container relative mx-auto grid items-center gap-8 px-4 pt-16 pb-10 md:grid-cols-2 md:pt-20">
-          {/* Left copy */}
-          <div>
-            <div className="mb-2 text-xs font-extrabold uppercase tracking-widest text-white/60">
-              You are more than what you think
-            </div>
-            <h1 className="text-5xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-6xl">
-              {heroSlide.title || "Find Your Strength."}
-            </h1>
-            {heroSlide.tagline && (
-              <p className="mt-4 max-w-xl text-white/80">{heroSlide.tagline}</p>
-            )}
-            <div className="mt-6 flex flex-wrap gap-3">
-              {/* Scroll to benefit section */}
-              <a href="#benefit" className="rounded-full px-6 py-3 font-bold text-black" style={{ backgroundColor: BRAND.blue }}>
-                Get Started
-              </a>
-              <Link href={home?.secondaryCta?.href || "/classes"} className="rounded-full border border-white/20 px-6 py-3 font-bold text-white hover:bg-white/10">
-                {home?.secondaryCta?.label || "See Class Schedule"}
-              </Link>
-            </div>
-          </div>
-
-          {/* Right visual */}
-          <div className="relative mx-auto w-full max-w-md">
-            <div className="absolute -right-4 -top-4 h-28 w-28 rotate-6 rounded-lg" style={{ backgroundColor: "rgba(13,186,245,0.15)" }} />
-            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-2xl">
-              <div className="relative h-80 w-full sm:h-[420px]">
-                <Image src={heroSlide.imageUrl} alt={heroSlide.title || "Hero"} fill className="object-cover" priority sizes="(max-width: 768px) 100vw, 480px" />
-              </div>
-              <div className="absolute left-4 top-4 rounded-lg bg-black/60 px-3 py-2">
-                <div className="text-2xl font-extrabold text-white">{expertCount}+</div>
-                <div className="text-[11px] font-bold uppercase tracking-wider" style={{ color: BRAND.blue }}>
-                  Expert Trainers
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Three mini tiles under hero (use services if present) */}
-        {home?.services && home.services.length > 0 && (
-          <div className="container mx-auto -mt-4 grid gap-4 px-4 pb-10 md:-mt-8 md:grid-cols-3">
-            {home.services.slice(0, 3).map((s, i) => (
-              <a key={s.title + i} href={s.href || "#"} className={`block rounded-2xl border p-4 ${i < 2 ? 'border-cyan-500/20 bg-cyan-500/10' : 'border-white/10 bg-white/5'}`}>
-                <div className="text-3xl font-extrabold text-white/20">0{i + 1}</div>
-                <div className="mt-1 text-lg font-extrabold text-white">{s.title}</div>
-                {s.blurb && <p className="mt-1 text-sm text-white/80">{s.blurb}</p>}
-              </a>
-            ))}
-          </div>
-        )}
-      </section>
+      {/* HERO CAROUSEL (full-bleed cover with CTAs) */}
+      <HeroCarousel
+        slides={(home?.heroSlides?.length
+          ? home!.heroSlides
+          : [
+              {
+                imageUrl:
+                  latestPosts?.[0]?.coverImageUrl ||
+                  topClasses?.[0]?.imageUrl ||
+                  useCoaches?.[0]?.photoUrl ||
+                  "/placeholder-hero.jpg",
+                title: "Train Smarter. Get Stronger.",
+                tagline:
+                  "World‑class coaching, electrifying classes, and a supportive community.",
+              },
+            ]) as any}
+        primaryCta={{ label: "Get Started", href: "#benefit" }}
+        secondaryCta={home?.secondaryCta}
+      />
 
       {/* Feature Tiles under hero */}
       {home?.featureTiles && home.featureTiles.length > 0 && (
-        <FeatureTiles tiles={home.featureTiles} />
+        <>
+          <section className="container mx-auto px-4 pt-2 text-center">
+            <h2 className="text-xl sm:text-2xl font-extrabold">Ignite Your Routine</h2>
+            <p className="mx-auto mt-1 max-w-2xl text-sm text-white/80">
+              Choose your path — Classes, Trainers, Memberships, and more. Everything you need to level up.
+            </p>
+          </section>
+          <FeatureTiles tiles={home.featureTiles} />
+        </>
       )}
 
       {/* Services Overview */}
       {home?.services && home.services.length > 0 && (
-        <section className="container mx-auto px-4 pb-12">
+        <section className="container px-4 pb-12 mx-auto text-center">
+          <div className="mb-3 text-center">
+            <h2 className="text-xl sm:text-2xl font-extrabold">What We Offer</h2>
+            <p className="mx-auto mt-1 max-w-2xl text-sm text-white/80">
+              From high-voltage classes to one‑on‑one coaching and a recovery‑friendly juice bar — we’ve got you covered.
+            </p>
+          </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {home.services.slice(0,4).map((s, i) => (
-              <a key={s.title + i} href={s.href || '#'} className="group block rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10">
+              <a key={s.title + i} href={s.href || '#'} className="block p-5 border group rounded-2xl border-white/10 bg-white/5 hover:bg-white/10">
                 <div className="flex items-center gap-3">
                   {s.iconUrl ? (
-                    <span className="relative inline-block h-10 w-10 overflow-hidden rounded-lg bg-white/10">
+                    <span className="relative inline-block w-10 h-10 overflow-hidden rounded-lg bg-white/10">
                       <Image src={s.iconUrl} alt="" fill className="object-contain p-2" />
                     </span>
-                  ) : (<span className="h-10 w-10 rounded-lg bg-white/10" />)}
+                  ) : (<span className="w-10 h-10 rounded-lg bg-white/10" />)}
                   <div className="text-lg font-extrabold text-white">{s.title}</div>
                 </div>
                 {s.blurb && <p className="mt-2 text-sm text-white/80">{s.blurb}</p>}
@@ -200,20 +180,20 @@ export default async function HomePage() {
       )}
 
       {/* Divider */}
-      <div className="container mx-auto my-6 h-px bg-white/10" />
+      <div className="container h-px mx-auto my-6 bg-white/10" />
 
       {/* Testimonials */}
       {home?.testimonials && home.testimonials.length > 0 && (
-        <section className="container mx-auto px-4 pb-16">
-          <div className="mb-4 flex items-center justify-between">
+        <section className="container px-4 pb-16 mx-auto">
+          <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-extrabold text-white">What our members say</h2>
             <Link href="/transformations" className="text-sm font-bold text-cyan-400 hover:text-cyan-300">See Success Stories</Link>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             {home.testimonials.slice(0,3).map((t, i) => (
-              <div key={(t.name||'')+i} className="rounded-3xl border border-white/10 bg-white/5 p-5">
+              <div key={(t.name||'')+i} className="p-5 border rounded-3xl border-white/10 bg-white/5">
                 <div className="flex items-center gap-3">
-                  {t.photoUrl && <span className="relative inline-block h-12 w-12 overflow-hidden rounded-full bg-white/10"><Image src={t.photoUrl} alt="" fill className="object-cover" /></span>}
+                  {t.photoUrl && <span className="relative inline-block w-12 h-12 overflow-hidden rounded-full bg-white/10"><Image src={t.photoUrl} alt="" fill className="object-cover" /></span>}
                   <div>
                     <div className="font-bold text-white">{t.name}</div>
                     {t.since && <div className="text-xs text-white/70">Member since {t.since}</div>}
@@ -228,12 +208,12 @@ export default async function HomePage() {
 
       {/* Why Us Features */}
       {home?.features && home.features.length > 0 && (
-        <section className="container mx-auto px-4 pb-16">
-          <h3 className="mb-6 text-center text-sm font-extrabold uppercase tracking-widest text-white/70">We give the best standards</h3>
+        <section className="container px-4 pb-16 mx-auto">
+          <h3 className="mb-6 text-sm font-extrabold tracking-widest text-center uppercase text-white/70">We give the best standards</h3>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {home.features.slice(0,6).map((f, i) => (
-              <div key={(f.title||'')+i} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center">
-                {f.iconUrl && <span className="relative mx-auto block h-10 w-10 overflow-hidden rounded-lg bg-white/10"><Image src={f.iconUrl} alt="" fill className="object-contain p-2" /></span>}
+              <div key={(f.title||'')+i} className="p-4 text-center border rounded-2xl border-white/10 bg-white/5">
+                {f.iconUrl && <span className="relative block w-10 h-10 mx-auto overflow-hidden rounded-lg bg-white/10"><Image src={f.iconUrl} alt="" fill className="object-contain p-2" /></span>}
                 <div className="mt-2 font-bold text-white">{f.title}</div>
                 {f.metric && <div className="text-xs text-cyan-400">{f.metric}</div>}
                 {f.description && <div className="text-xs text-white/70">{f.description}</div>}
@@ -244,17 +224,17 @@ export default async function HomePage() {
       )}
 
       {/* Highlight Card (Unlimited Group & PT) */}
-      <section id="benefit" className="container mx-auto px-4 pb-16">
+      <section id="benefit" className="container px-4 pb-16 mx-auto">
         <div className="grid gap-4 md:grid-cols-3">
-          <div className="rounded-3xl border border-white/10 bg-cyan-500/15 p-6 shadow-xl md:col-span-2">
+          <div className="p-6 border shadow-xl rounded-3xl border-white/10 bg-cyan-500/15 md:col-span-2">
             <h3 className="text-2xl font-extrabold text-white sm:text-3xl">Unlimited Group & Personal Training</h3>
-            <p className="mt-2 max-w-xl text-sm text-white/80">Push harder with electrifying group sessions or get tailored 1:1 coaching to reach goals faster.</p>
-            <div className="mt-5 flex gap-3">
-              <Link href="/pricing" className="rounded-full bg-cyan-500 px-5 py-2 font-bold text-black hover:bg-cyan-400">View Plans</Link>
-              <Link href="/coaches" className="rounded-full border border-white/20 px-5 py-2 font-bold text-white hover:bg-white/10">Meet Coaches</Link>
+            <p className="max-w-xl mt-2 text-sm text-white/80">Push harder with electrifying group sessions or get tailored 1:1 coaching to reach goals faster.</p>
+            <div className="flex gap-3 mt-5">
+              <Link href="/pricing" className="px-5 py-2 font-bold text-black rounded-full bg-cyan-500 hover:bg-cyan-400">View Plans</Link>
+              <Link href="/coaches" className="px-5 py-2 font-bold text-white border rounded-full border-white/20 hover:bg-white/10">Meet Coaches</Link>
             </div>
           </div>
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+          <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
             <div className="text-3xl font-extrabold text-white">500+</div>
             <p className="mt-1 text-sm text-white/80">Members smashing their goals</p>
           </div>
@@ -263,8 +243,8 @@ export default async function HomePage() {
 
       {/* COACHES */}
       {!!useCoaches.length && (
-        <section className="container mx-auto px-4 pb-16">
-          <div className="mb-4 flex items-center justify-between">
+        <section className="container px-4 pb-16 mx-auto">
+          <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-extrabold text-white">Our Team</h2>
             <Link href="/coaches" className="text-sm font-bold text-cyan-400 hover:text-cyan-300">Meet all coaches</Link>
           </div>
@@ -278,27 +258,27 @@ export default async function HomePage() {
 
       {/* CLASSES */}
       {topClasses.length > 0 && (
-        <section className="container mx-auto px-4 pb-16">
-          <div className="mb-4 flex items-center justify-between">
+        <section className="container px-4 pb-16 mx-auto">
+          <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-extrabold text-white">Popular Classes</h2>
             <Link href="/classes" className="text-sm font-bold text-cyan-400 hover:text-cyan-300">View all</Link>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {classes.slice(0, 6).map((c, idx) => (
-              <article key={c.slug} className="group relative h-56 overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-sm">
-                <Link href={`/classes/${c.slug}`} className="block h-full w-full">
-                  <div className="relative h-full w-full">
+              <article key={c.slug} className="relative h-56 overflow-hidden border shadow-sm group rounded-3xl border-white/10 bg-white/5">
+                <Link href={`/classes/${c.slug}`} className="block w-full h-full">
+                  <div className="relative w-full h-full">
                     {c.imageUrl ? (
                       <Image src={c.imageUrl} alt={c.name} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
-                    ) : (<div className="h-full w-full bg-white/5" />)}
+                    ) : (<div className="w-full h-full bg-white/5" />)}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-                    <div className="absolute left-4 top-4 flex gap-2">
+                    <div className="absolute flex gap-2 left-4 top-4">
                       {c.intensityLevel && <span className="rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-white">{c.intensityLevel}</span>}
                       {typeof c.duration === 'number' && <span className="rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-white">{c.duration} min</span>}
                     </div>
                     <div className="absolute bottom-0 left-0 right-0 p-4">
                       <h3 className="text-lg font-bold text-white">{c.name}</h3>
-                      {c.tagline && <p className="mt-1 line-clamp-2 text-sm text-white/80">{c.tagline}</p>}
+                      {c.tagline && <p className="mt-1 text-sm line-clamp-2 text-white/80">{c.tagline}</p>}
                     </div>
                   </div>
                 </Link>
@@ -309,8 +289,8 @@ export default async function HomePage() {
       )}
 
       {/* Standards / Pillars */}
-      <section className="container mx-auto px-4 pb-16">
-        <h3 className="mb-6 text-center text-sm font-extrabold uppercase tracking-widest text-white/70">We set the highest standards</h3>
+      <section className="container px-4 pb-16 mx-auto">
+        <h3 className="mb-6 text-sm font-extrabold tracking-widest text-center uppercase text-white/70">We set the highest standards</h3>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
             { Icon: FaDumbbell, title: 'Elite Equipment', text: 'Train with premium gear.' },
@@ -318,8 +298,8 @@ export default async function HomePage() {
             { Icon: FaHeartbeat, title: 'Holistic Approach', text: 'Strength, cardio, recovery.' },
             { Icon: FaLeaf, title: 'Nutrition Guidance', text: 'Support to fuel progress.' },
           ].map((f, i) => (
-            <div key={f.title} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center">
-              <f.Icon className="mx-auto h-6 w-6 text-cyan-400" />
+            <div key={f.title} className="p-4 text-center border rounded-2xl border-white/10 bg-white/5">
+              <f.Icon className="w-6 h-6 mx-auto text-cyan-400" />
               <div className="mt-2 font-bold text-white">{f.title}</div>
               <div className="text-xs text-white/70">{f.text}</div>
             </div>
@@ -329,8 +309,8 @@ export default async function HomePage() {
 
       {/* TRANSFORMATIONS */}
       {topStories.length > 0 && (
-        <section className="container mx-auto px-4 pb-16">
-          <div className="mb-4 flex items-center justify-between">
+        <section className="container px-4 pb-16 mx-auto">
+          <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-extrabold text-white">Member Transformations</h2>
             <Link href="/transformations" className="text-sm font-bold text-cyan-400 hover:text-cyan-300">See more</Link>
           </div>
@@ -342,8 +322,8 @@ export default async function HomePage() {
 
       {/* PRICING PREVIEW */}
       {topPlans.length > 0 && (
-        <section className="container mx-auto px-4 pb-16">
-          <div className="mb-4 flex items-center justify-between">
+        <section className="container px-4 pb-16 mx-auto">
+          <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-extrabold text-white">Memberships</h2>
             <Link href="/pricing" className="text-sm font-bold text-cyan-400 hover:text-cyan-300">All plans</Link>
           </div>
@@ -355,12 +335,12 @@ export default async function HomePage() {
 
       {/* EVENTS (moved above blog) */}
       {topEvents.length > 0 && (
-        <section className="container mx-auto px-4 pb-20">
-          <div className="mb-4 flex items-center justify-between">
+        <section className="container px-4 pb-20 mx-auto">
+          <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-extrabold text-white">Upcoming Events</h2>
             <Link href="/community" className="text-sm font-bold text-cyan-400 hover:text-cyan-300">View community</Link>
           </div>
-          <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2">
+          <div className="flex gap-4 pb-2 overflow-x-auto snap-x snap-mandatory">
             {topEvents.map((e) => (<EventCard key={e._id} evt={e} />))}
           </div>
         </section>
@@ -368,8 +348,8 @@ export default async function HomePage() {
 
       {/* BLOG (last) */}
       {!!latestPosts.length && (
-        <section className="container mx-auto px-4 pb-16">
-          <div className="mb-4 flex items-center justify-between">
+        <section className="container px-4 pb-16 mx-auto">
+          <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-extrabold text-white">Latest from the Blog</h2>
             <Link href="/blog" className="text-sm font-bold text-cyan-400 hover:text-cyan-300">Read more</Link>
           </div>
@@ -380,13 +360,13 @@ export default async function HomePage() {
       )}
 
       {/* CTA */}
-      <section className="container mx-auto px-4 pb-20">
-        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 text-center shadow-xl">
+      <section className="container px-4 pb-20 mx-auto">
+        <div className="relative p-8 overflow-hidden text-center border shadow-xl rounded-3xl border-white/10 bg-white/5">
           <h3 className="text-2xl font-extrabold text-white sm:text-3xl">Ready to start your journey?</h3>
           <p className="mt-2 text-white/80">Join TRAIN FITNESS today or take a VR Tour of our facilities.</p>
-          <div className="mt-5 flex flex-wrap justify-center gap-3">
-            <Link href="/pricing" className="rounded-full px-6 py-3 font-bold text-black" style={{ backgroundColor: BRAND.blue }}>Join Now</Link>
-            <Link href="/tour" className="rounded-full border border-white/20 px-6 py-3 font-bold text-white hover:bg-white/10">VR Tour</Link>
+          <div className="flex flex-wrap justify-center gap-3 mt-5">
+            <Link href="/pricing" className="px-6 py-3 font-bold text-black rounded-full" style={{ backgroundColor: BRAND.blue }}>Join Now</Link>
+            <Link href="/tour" className="px-6 py-3 font-bold text-white border rounded-full border-white/20 hover:bg-white/10">VR Tour</Link>
           </div>
         </div>
       </section>

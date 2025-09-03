@@ -7,4 +7,9 @@ export type HomePageData = {
   services?: { iconUrl?: string; title: string; blurb?: string; href?: string }[];
   features?: { iconUrl?: string; title?: string; description?: string; metric?: string }[];
   testimonials?: { photoUrl?: string; name?: string; since?: string; quote?: string }[];
+  announcement?: { label?: string; text?: string; href?: string; cta?: string };
+  highlight?: { title?: string; blurb?: string };
+  memberCount?: number;
+  yearsOfExperience?: number;
+  classesPerWeek?: number;
 };
