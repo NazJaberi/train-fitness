@@ -2,10 +2,10 @@
 import {createClient} from '@sanity/client'
 
 export const client = createClient({
-  // --- THIS IS THE FIX ---
-  projectId: '5j9851v0', 
-
-  dataset: 'production',
-  useCdn: false,
+  // These now read from environment variables
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
+  
+  useCdn: process.env.NODE_ENV === 'production', // Use CDN in production
   apiVersion: '2024-01-01',
 })
