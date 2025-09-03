@@ -1,6 +1,8 @@
 "use client";
 
-import { useMemo, useState, type ReactNode, type Dispatch, type SetStateAction } from "react";
+import { useMemo, useState, type ReactNode, type Dispatch, type SetStateAction, type ComponentType } from "react";
+
+
 
 type ActivityKey = "sedentary" | "light" | "moderate" | "active" | "very";
 
@@ -25,7 +27,7 @@ type ToolDef = {
   title: string;
   category: Category;
   keywords?: string[];
-  component: () => ReactNode; // Changed to ReactNode
+  component?: ComponentType; // or React.ElementType, or ComponentType<any>
   description?: string;
 };
 
