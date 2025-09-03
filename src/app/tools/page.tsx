@@ -120,24 +120,24 @@ export default function ToolsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <section className="container mx-auto px-4 pt-16 pb-8 sm:pt-20 text-center">
+    <div className="min-h-screen text-white bg-black">
+      <section className="container px-4 pt-16 pb-8 mx-auto text-center sm:pt-20">
         <h1 className="text-5xl font-extrabold tracking-tight">Fitness Tools</h1>
-        <p className="mx-auto mt-2 max-w-2xl text-sm text-white/80">
+        <p className="max-w-2xl mx-auto mt-2 text-sm text-white/80">
           Search, filter, and use calculators for nutrition, strength, endurance, and programming.
         </p>
         {/* Search + category filter */}
-        <div className="mx-auto mt-5 flex max-w-3xl flex-col items-center gap-3 sm:flex-row">
+        <div className="flex flex-col items-center max-w-3xl gap-3 mx-auto mt-5 sm:flex-row">
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search tools…"
-            className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-cyan-500"
+            className="w-full px-4 py-2 text-sm border rounded-full outline-none border-white/10 bg-white/5 focus:ring-2 focus:ring-cyan-500"
           />
           <select
             value={cat}
             onChange={(e) => setCat(e.target.value as any)}
-            className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-cyan-500 sm:w-60"
+            className="w-full px-4 py-2 text-sm border rounded-full outline-none border-white/10 bg-white/5 focus:ring-2 focus:ring-cyan-500 sm:w-60"
           >
             <option value="all">All Categories</option>
             {CATEGORIES.map((c) => (
@@ -149,7 +149,7 @@ export default function ToolsPage() {
         </div>
       </section>
 
-      <section className="container mx-auto grid gap-6 px-4 pb-20 md:grid-cols-2 lg:grid-cols-3">
+      <section className="container grid gap-6 px-4 pb-20 mx-auto md:grid-cols-2 lg:grid-cols-3">
         {visible.map((t) => (
           <ToolCard key={t.id} tool={t} />
         ))}
@@ -162,7 +162,7 @@ function ToolCard({ tool }: { tool: ToolDef }) {
   return tool.component ? (
     <tool.component />
   ) : (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-white/60">
         {tool.category}
       </div>
@@ -170,7 +170,7 @@ function ToolCard({ tool }: { tool: ToolDef }) {
       {tool.description && (
         <p className="mt-1 text-sm text-white/80">{tool.description}</p>
       )}
-      <div className="mt-4 inline-flex cursor-not-allowed rounded-full border border-white/15 px-4 py-2 text-xs text-white/60">
+      <div className="inline-flex px-4 py-2 mt-4 text-xs border rounded-full cursor-not-allowed border-white/15 text-white/60">
         Coming Soon
       </div>
     </div>
@@ -196,28 +196,28 @@ function BMICard() {
   }, [bmi]);
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">BMI Calculator</h2>
       <p className="mt-1 text-sm text-white/80">Body Mass Index (kg/m²). A simple ratio of weight to height.</p>
-      <form className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4" onSubmit={(e) => e.preventDefault()}>
-        <label className="col-span-2 flex flex-col gap-1">
+      <form className="grid grid-cols-2 gap-3 mt-4 sm:grid-cols-4" onSubmit={(e) => e.preventDefault()}>
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Height (cm)</span>
           <input
             type="number"
             value={cm}
             onChange={(e) => setCm(+e.target.value)}
-            className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-500"
+            className="px-3 py-2 border rounded-lg outline-none border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500"
             min={80}
             max={250}
           />
         </label>
-        <label className="col-span-2 flex flex-col gap-1">
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Weight (kg)</span>
           <input
             type="number"
             value={kg}
             onChange={(e) => setKg(+e.target.value)}
-            className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-500"
+            className="px-3 py-2 border rounded-lg outline-none border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500"
             min={20}
             max={300}
           />
@@ -261,36 +261,36 @@ function MacrosCard() {
   }, [sex, age, cm, kg, activity, goal]);
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Daily Macros</h2>
       <p className="mt-1 text-sm text-white/80">Estimate daily calories and macronutrients using Mifflin‑St Jeor.</p>
-      <form className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-6" onSubmit={(e) => e.preventDefault()}>
-        <label className="col-span-2 flex flex-col gap-1">
+      <form className="grid grid-cols-2 gap-3 mt-4 sm:grid-cols-6" onSubmit={(e) => e.preventDefault()}>
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Sex</span>
           <select
             value={sex}
             onChange={(e) => setSex(e.target.value as any)}
-            className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-500"
+            className="px-3 py-2 border rounded-lg outline-none border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500"
           >
             <option value="male">Male</option>
             <option value="female">Female</option>
           </select>
         </label>
-        <label className="col-span-2 flex flex-col gap-1">
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Age</span>
-          <input type="number" value={age} min={13} max={90} onChange={(e) => setAge(+e.target.value)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-500" />
+          <input type="number" value={age} min={13} max={90} onChange={(e) => setAge(+e.target.value)} className="px-3 py-2 border rounded-lg outline-none border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500" />
         </label>
-        <label className="col-span-2 flex flex-col gap-1">
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Height (cm)</span>
-          <input type="number" value={cm} min={80} max={250} onChange={(e) => setCm(+e.target.value)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-500" />
+          <input type="number" value={cm} min={80} max={250} onChange={(e) => setCm(+e.target.value)} className="px-3 py-2 border rounded-lg outline-none border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500" />
         </label>
-        <label className="col-span-2 flex flex-col gap-1">
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Weight (kg)</span>
-          <input type="number" value={kg} min={20} max={300} onChange={(e) => setKg(+e.target.value)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-500" />
+          <input type="number" value={kg} min={20} max={300} onChange={(e) => setKg(+e.target.value)} className="px-3 py-2 border rounded-lg outline-none border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500" />
         </label>
-        <label className="col-span-2 flex flex-col gap-1">
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Activity</span>
-          <select value={activity} onChange={(e) => setActivity(e.target.value as ActivityKey)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-500">
+          <select value={activity} onChange={(e) => setActivity(e.target.value as ActivityKey)} className="px-3 py-2 border rounded-lg outline-none border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500">
             <option value="sedentary">Sedentary</option>
             <option value="light">Light (1–3 days/week)</option>
             <option value="moderate">Moderate (3–5)</option>
@@ -298,9 +298,9 @@ function MacrosCard() {
             <option value="very">Very Active</option>
           </select>
         </label>
-        <label className="col-span-2 flex flex-col gap-1">
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Goal</span>
-          <select value={goal} onChange={(e) => setGoal(e.target.value as any)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-500">
+          <select value={goal} onChange={(e) => setGoal(e.target.value as any)} className="px-3 py-2 border rounded-lg outline-none border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500">
             <option value="maintain">Maintain</option>
             <option value="lose">Lose</option>
             <option value="gain">Gain</option>
@@ -324,7 +324,7 @@ function MacrosCard() {
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center">
+    <div className="p-4 text-center border rounded-2xl border-white/10 bg-white/5">
       <div className="text-xl font-extrabold">{value}</div>
       <div className="text-xs text-white/70">{label}</div>
     </div>
@@ -335,8 +335,8 @@ function Metric({ label, value }: { label: string; value: string }) {
 
 function CyanPanel({ children, title }: { children: ReactNode; title: string }) {
   return (
-    <div className="mt-4 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-4">
-      <div className="text-xs font-bold uppercase tracking-wider text-cyan-400">{title}</div>
+    <div className="p-4 mt-4 border rounded-2xl border-cyan-500/30 bg-cyan-500/10">
+      <div className="text-xs font-bold tracking-wider uppercase text-cyan-400">{title}</div>
       <div className="mt-1">{children}</div>
     </div>
   );
@@ -359,32 +359,32 @@ function GoalCaloriesCard() {
   }, [sex, age, cm, kg, activity, rate]);
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Goal Calories</h2>
       <p className="mt-1 text-sm text-white/80">TDEE + weekly rate → cutting / recomp / bulk calories.</p>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-6" onSubmit={(e) => e.preventDefault()}>
-        <label className="col-span-2 flex flex-col gap-1">
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-6" onSubmit={(e) => e.preventDefault()}>
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Sex</span>
-          <select value={sex} onChange={(e)=>setSex(e.target.value as any)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 focus:ring-2 focus:ring-cyan-500">
+          <select value={sex} onChange={(e)=>setSex(e.target.value as any)} className="px-3 py-2 border rounded-lg border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500">
             <option value="male">Male</option>
             <option value="female">Female</option>
           </select>
         </label>
-        <label className="col-span-2 flex flex-col gap-1">
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Age</span>
-          <input type="number" min={13} max={90} value={age} onChange={(e)=>setAge(+e.target.value)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 focus:ring-2 focus:ring-cyan-500" />
+          <input type="number" min={13} max={90} value={age} onChange={(e)=>setAge(+e.target.value)} className="px-3 py-2 border rounded-lg border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500" />
         </label>
-        <label className="col-span-2 flex flex-col gap-1">
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Height (cm)</span>
-          <input type="number" min={80} max={250} value={cm} onChange={(e)=>setCm(+e.target.value)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 focus:ring-2 focus:ring-cyan-500" />
+          <input type="number" min={80} max={250} value={cm} onChange={(e)=>setCm(+e.target.value)} className="px-3 py-2 border rounded-lg border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500" />
         </label>
-        <label className="col-span-2 flex flex-col gap-1">
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Weight (kg)</span>
-          <input type="number" min={20} max={300} value={kg} onChange={(e)=>setKg(+e.target.value)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 focus:ring-2 focus:ring-cyan-500" />
+          <input type="number" min={20} max={300} value={kg} onChange={(e)=>setKg(+e.target.value)} className="px-3 py-2 border rounded-lg border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500" />
         </label>
-        <label className="col-span-2 flex flex-col gap-1">
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Activity</span>
-          <select value={activity} onChange={(e)=>setActivity(e.target.value as ActivityKey)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 focus:ring-2 focus:ring-cyan-500">
+          <select value={activity} onChange={(e)=>setActivity(e.target.value as ActivityKey)} className="px-3 py-2 border rounded-lg border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500">
             <option value="sedentary">Sedentary</option>
             <option value="light">Light (1–3 days)</option>
             <option value="moderate">Moderate (3–5)</option>
@@ -392,9 +392,9 @@ function GoalCaloriesCard() {
             <option value="very">Very Active</option>
           </select>
         </label>
-        <label className="col-span-2 flex flex-col gap-1">
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Rate (kg/week)</span>
-          <input type="number" step={0.05} value={rate} onChange={(e)=>setRate(+e.target.value)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 focus:ring-2 focus:ring-cyan-500" />
+          <input type="number" step={0.05} value={rate} onChange={(e)=>setRate(+e.target.value)} className="px-3 py-2 border rounded-lg border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500" />
         </label>
       </form>
       <CyanPanel title="Results">
@@ -434,13 +434,13 @@ function NavyBfCard() {
   }, [sex, height, neck, waist, hips, weight]);
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Navy Body‑Fat %</h2>
       <p className="mt-1 text-sm text-white/80">Tape method (US Navy). Measurements in cm.</p>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
-        <label className="col-span-2 flex flex-col gap-1">
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Sex</span>
-          <select value={sex} onChange={(e)=>setSex(e.target.value as any)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 focus:ring-2 focus:ring-cyan-500">
+          <select value={sex} onChange={(e)=>setSex(e.target.value as any)} className="px-3 py-2 border rounded-lg border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500">
             <option value="male">Male</option>
             <option value="female">Female</option>
           </select>
@@ -469,9 +469,9 @@ function OneRmCard() {
   const epley = useMemo(()=> +(load * (1 + reps/30)).toFixed(1), [load, reps]);
   const brzycki = useMemo(()=> reps>=1 && reps<37 ? +(load * 36/(37-reps)).toFixed(1): 0, [load, reps]);
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">1‑Rep Max (Epley/Brzycki)</h2>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4" onSubmit={(e)=>e.preventDefault()}>
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-4" onSubmit={(e)=>e.preventDefault()}>
         <Num label="Load (kg)" value={load} setValue={setLoad} min={10} max={500} />
         <Num label="Reps" value={reps} setValue={setReps} min={1} max={12} />
       </form>
@@ -498,15 +498,15 @@ function RepTableCard() {
     });
   }, [oneRm]);
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Rep Max Table (2–12RM)</h2>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4" onSubmit={(e)=>e.preventDefault()}>
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-4" onSubmit={(e)=>e.preventDefault()}>
         <Num label="1RM (kg)" value={oneRm} setValue={setOneRm} min={20} max={500} />
       </form>
       <CyanPanel title="Predictions (Epley)">
-        <div className="grid grid-cols-3 gap-2 text-center text-xs text-white/80">
+        <div className="grid grid-cols-3 gap-2 text-xs text-center text-white/80">
           {rows.map(({ r, pct, load }) => (
-            <div key={r} className="rounded-2xl border border-white/10 bg-white/5 p-3">
+            <div key={r} className="p-3 border rounded-2xl border-white/10 bg-white/5">
               <div className="text-lg font-extrabold text-white">{load} kg</div>
               <div>≈ {r}RM • {pct}% 1RM</div>
             </div>
@@ -529,9 +529,9 @@ function PrilepinCard() {
     return { range: [4, 10], optimal: 7, repsPerSet: "1–2" };
   }, [percent]);
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Prilepin Planner</h2>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4" onSubmit={(e)=>e.preventDefault()}>
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-4" onSubmit={(e)=>e.preventDefault()}>
         <Num label="Intensity (%1RM)" value={percent} setValue={setPercent} min={50} max={100} />
       </form>
       <CyanPanel title="Guidelines">
@@ -553,9 +553,9 @@ function VolumeLoadCard() {
   const [weight, setWeight] = useState(100);
   const tonnage = useMemo(() => sets * reps * weight, [sets, reps, weight]);
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Volume Load Tracker</h2>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
         <Num label="Sets" value={sets} setValue={setSets} min={1} max={20} />
         <Num label="Reps/Set" value={reps} setValue={setReps} min={1} max={30} />
         <Num label="Weight (kg)" value={weight} setValue={setWeight} min={1} max={500} />
@@ -589,14 +589,14 @@ function PlatesCard() {
   }, [target, bar, available]);
   const sumSide = perSide.reduce((a,b)=>a+b,0);
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Plate Math</h2>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
         <Num label="Target (kg)" value={target} setValue={setTarget} min={bar} max={500} />
         <Num label="Bar (kg)" value={bar} setValue={setBar} min={5} max={50} />
-        <label className="col-span-2 flex flex-col gap-1">
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Plates (kg, comma‑sep)</span>
-          <input value={available} onChange={(e)=>setAvailable(e.target.value)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-500" />
+          <input value={available} onChange={(e)=>setAvailable(e.target.value)} className="px-3 py-2 border rounded-lg outline-none border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500" />
         </label>
       </form>
       <CyanPanel title="Per‑Side Stack">
@@ -615,9 +615,9 @@ function HrZonesCard() {
   const hrr = hrmax - rest;
   const zone = (lo:number, hi:number)=> `${Math.round(rest + hrr*lo)}–${Math.round(rest + hrr*hi)} bpm`;
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Heart‑Rate Zones (Karvonen)</h2>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4" onSubmit={(e)=>e.preventDefault()}>
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-4" onSubmit={(e)=>e.preventDefault()}>
         <Num label="Age" value={age} setValue={setAge} min={10} max={90} />
         <Num label="Resting HR" value={rest} setValue={setRest} min={35} max={110} />
       </form>
@@ -642,9 +642,9 @@ function MetKcalCard() {
   const [min, setMin] = useState(45);
   const kcal = useMemo(() => Math.round(met * 3.5 * kg / 200 * min), [met, kg, min]);
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Calorie Burn (MET)</h2>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
         <Num label="MET" value={met} setValue={setMet} min={1} max={20} />
         <Num label="Weight (kg)" value={kg} setValue={setKg} min={20} max={300} />
         <Num label="Duration (min)" value={min} setValue={setMin} min={1} max={300} />
@@ -667,13 +667,13 @@ function PaceConverterCard() {
   const paceSecPerKm = useMemo(()=> (distKm>0 && totalSec>0) ? Math.round(totalSec / distKm) : 0, [distKm, totalSec]);
   const speedKmh = useMemo(()=> paceSecPerKm>0 ? +(3.6 * 1000 / paceSecPerKm).toFixed(2) : 0, [paceSecPerKm]);
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Run Pace / Speed / Time</h2>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
         <Num label="Distance (km)" value={distKm} setValue={setDistKm} min={0.1} max={100} />
-        <label className="col-span-2 flex flex-col gap-1">
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Time (HH:MM:SS)</span>
-          <input value={timeStr} onChange={(e)=>setTimeStr(e.target.value)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-500" />
+          <input value={timeStr} onChange={(e)=>setTimeStr(e.target.value)} className="px-3 py-2 border rounded-lg outline-none border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500" />
         </label>
       </form>
       <CyanPanel title="Results">
@@ -698,13 +698,13 @@ function RacePredictorCard() {
     return Math.round(sec2);
   }, [d1, t1, d2]);
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Race Time Predictor</h2>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
         <Num label="Known Distance (km)" value={d1} setValue={setD1} min={0.4} max={100} />
-        <label className="col-span-2 flex flex-col gap-1">
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Known Time (HH:MM:SS)</span>
-          <input value={t1} onChange={(e)=>setT1(e.target.value)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-500" />
+          <input value={t1} onChange={(e)=>setT1(e.target.value)} className="px-3 py-2 border rounded-lg outline-none border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500" />
         </label>
         <Num label="Target Distance (km)" value={d2} setValue={setD2} min={0.8} max={100} />
       </form>
@@ -734,15 +734,15 @@ function FtpZonesCard() {
     return z.map(zx => ({ ...zx, loW: Math.round(zx.lo * ftp), hiW: Math.round(zx.hi * ftp) }));
   }, [ftp]);
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Cycling FTP Zones</h2>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4" onSubmit={(e)=>e.preventDefault()}>
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-4" onSubmit={(e)=>e.preventDefault()}>
         <Num label="FTP (W)" value={ftp} setValue={setFtp} min={80} max={500} />
       </form>
       <CyanPanel title="Power Ranges">
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {zones.map(z => (
-            <div key={z.name} className="rounded-2xl border border-white/10 bg-white/5 p-3 text-center">
+            <div key={z.name} className="p-3 text-center border rounded-2xl border-white/10 bg-white/5">
               <div className="text-lg font-extrabold">{z.name}</div>
               <div className="text-xs text-white/80">{z.loW}–{z.hiW} W</div>
             </div>
@@ -762,12 +762,12 @@ function RowerCard() {
   const wattsFromPace = useMemo(() => paceSec? Math.round(2.8 / Math.pow(paceSec/500, 3)) : 0, [paceSec]);
   const paceFromWatts = useMemo(() => watts>0? formatPace(Math.round(500 * Math.pow(2.8 / watts, 1/3))) : "—", [watts]);
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Rowing Pace ↔ Watts</h2>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
-        <label className="col-span-2 flex flex-col gap-1">
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Pace (mm:ss / 500m)</span>
-          <input value={pace} onChange={(e)=>setPace(e.target.value)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-500" />
+          <input value={pace} onChange={(e)=>setPace(e.target.value)} className="px-3 py-2 border rounded-lg outline-none border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500" />
         </label>
         <Num label="Watts" value={watts} setValue={setWatts} min={10} max={1000} />
       </form>
@@ -790,9 +790,9 @@ function StepsCard() {
   const distanceKm = useMemo(()=> +(steps * strideCm / 100000).toFixed(2), [steps, strideCm]);
   const kcal = useMemo(()=> Math.round(distanceKm * weight * 0.9), [distanceKm, weight]);
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Steps → Distance/Calories</h2>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
         <Num label="Steps" value={steps} setValue={setSteps} min={0} max={50000} />
         <Num label="Stride (cm)" value={strideCm} setValue={setStrideCm} min={40} max={120} />
         <Num label="Weight (kg)" value={weight} setValue={setWeight} min={20} max={300} />
@@ -814,9 +814,9 @@ function SrpeCard() {
   const [sRpe, setSRpe] = useState(6); // 0–10
   const load = useMemo(()=> minutes * sRpe, [minutes, sRpe]);
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Session RPE Load</h2>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
         <Num label="Duration (min)" value={minutes} setValue={setMinutes} min={5} max={300} />
         <Num label="sRPE (0–10)" value={sRpe} setValue={setSRpe} min={0} max={10} />
       </form>
@@ -837,9 +837,9 @@ function PolarizedCard() {
   const easy = Math.round(weeklyMin * easyPct / 100);
   const hard = weeklyMin - easy;
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Polarized Split Planner</h2>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
         <Num label="Weekly Minutes" value={weeklyMin} setValue={setWeeklyMin} min={60} max={1200} />
         <Num label="Easy %" value={easyPct} setValue={setEasyPct} min={50} max={95} />
       </form>
@@ -864,9 +864,9 @@ function DeloadCard() {
   const dReps = Math.max(1, Math.round(reps * (100 - reduce) / 100));
   const dWeight = Math.max(1, Math.round(weight * (100 - reduce) / 100));
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Deload Week Planner</h2>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
         <Num label="Sets" value={sets} setValue={setSets} min={1} max={20} />
         <Num label="Reps/Set" value={reps} setValue={setReps} min={1} max={30} />
         <Num label="Weight (kg)" value={weight} setValue={setWeight} min={1} max={500} />
@@ -892,9 +892,9 @@ function StretchDoseCard() {
   const hold = 15 + tightness * 5; // seconds per set
   const total = sets * hold * areas;
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Stretch Dose Planner</h2>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
         <Num label="Tightness (1–10)" value={tightness} setValue={setTightness} min={1} max={10} />
         <Num label="Areas" value={areas} setValue={setAreas} min={1} max={6} />
       </form>
@@ -918,12 +918,12 @@ function SleepNeedCard() {
   const windowStart = timeMinusHours(wake, hours + 0.5);
   const windowEnd = timeMinusHours(wake, hours - 0.5);
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Sleep Need Estimator</h2>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
-        <label className="col-span-2 flex flex-col gap-1">
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Wake Time (HH:MM)</span>
-          <input value={wake} onChange={(e)=>setWake(e.target.value)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-500" />
+          <input value={wake} onChange={(e)=>setWake(e.target.value)} className="px-3 py-2 border rounded-lg outline-none border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500" />
         </label>
         <Num label="Training Load (1–5)" value={load} setValue={setLoad} min={1} max={5} />
       </form>
@@ -982,27 +982,27 @@ function UnitConverterCard() {
   const [kcal, setKcal] = useState(2500);
   const kJ = useMemo(()=> Math.round(kcal * 4.184), [kcal]);
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Unit Converters</h2>
-      <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-4">
         <label className="flex flex-col gap-1">
           <span className="text-xs text-white/70">kg → lb</span>
-          <input type="number" value={kg} onChange={(e)=>setKg(+e.target.value)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 focus:ring-2 focus:ring-cyan-500" />
+          <input type="number" value={kg} onChange={(e)=>setKg(+e.target.value)} className="px-3 py-2 border rounded-lg border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500" />
           <CyanPanel title="Result"><div className="text-sm font-bold text-cyan-300">{lb} lb</div></CyanPanel>
         </label>
         <label className="flex flex-col gap-1">
           <span className="text-xs text-white/70">cm → in</span>
-          <input type="number" value={cm} onChange={(e)=>setCm(+e.target.value)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 focus:ring-2 focus:ring-cyan-500" />
+          <input type="number" value={cm} onChange={(e)=>setCm(+e.target.value)} className="px-3 py-2 border rounded-lg border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500" />
           <CyanPanel title="Result"><div className="text-sm font-bold text-cyan-300">{inch} in</div></CyanPanel>
         </label>
         <label className="flex flex-col gap-1">
           <span className="text-xs text-white/70">km → mi</span>
-          <input type="number" value={km} onChange={(e)=>setKm(+e.target.value)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 focus:ring-2 focus:ring-cyan-500" />
+          <input type="number" value={km} onChange={(e)=>setKm(+e.target.value)} className="px-3 py-2 border rounded-lg border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500" />
           <CyanPanel title="Result"><div className="text-sm font-bold text-cyan-300">{mi} mi</div></CyanPanel>
         </label>
         <label className="flex flex-col gap-1">
           <span className="text-xs text-white/70">kcal → kJ</span>
-          <input type="number" value={kcal} onChange={(e)=>setKcal(+e.target.value)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 focus:ring-2 focus:ring-cyan-500" />
+          <input type="number" value={kcal} onChange={(e)=>setKcal(+e.target.value)} className="px-3 py-2 border rounded-lg border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500" />
           <CyanPanel title="Result"><div className="text-sm font-bold text-cyan-300">{kJ} kJ</div></CyanPanel>
         </label>
       </div>
@@ -1012,9 +1012,9 @@ function UnitConverterCard() {
 
 function Num({ label, value, setValue, min, max }:{ label:string; value:number; setValue:(n:number)=>void; min?:number; max?:number }) {
   return (
-    <label className="col-span-2 flex flex-col gap-1">
+    <label className="flex flex-col col-span-2 gap-1">
       <span className="text-xs text-white/70">{label}</span>
-      <input type="number" value={value} onChange={(e)=>setValue(+e.target.value)} min={min} max={max} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-500" />
+      <input type="number" value={value} onChange={(e)=>setValue(+e.target.value)} min={min} max={max} className="px-3 py-2 border rounded-lg outline-none border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500" />
     </label>
   );
 }
@@ -1040,13 +1040,13 @@ function WhrCard() {
   }, [ratio, sex]);
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Waist‑Hip Ratio (WHR)</h2>
       <p className="mt-1 text-sm text-white/80">Waist / Hips in centimeters. Indicator of central adiposity.</p>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
-        <label className="col-span-2 flex flex-col gap-1">
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Sex</span>
-          <select value={sex} onChange={(e)=>setSex(e.target.value as any)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 focus:ring-2 focus:ring-cyan-500">
+          <select value={sex} onChange={(e)=>setSex(e.target.value as any)} className="px-3 py-2 border rounded-lg border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500">
             <option value="male">Male</option>
             <option value="female">Female</option>
           </select>
@@ -1079,10 +1079,10 @@ function WhtrCard() {
   }, [ratio]);
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Waist‑to‑Height Ratio (WHtR)</h2>
       <p className="mt-1 text-sm text-white/80">Waist / Height in centimeters. Simple central adiposity indicator.</p>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
         <Num label="Height (cm)" value={height} setValue={setHeight} min={80} max={250} />
         <Num label="Waist (cm)" value={waist} setValue={setWaist} min={40} max={200} />
       </form>
@@ -1112,10 +1112,10 @@ function FfmiCard() {
   }, [weight, height, bf]);
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">FFMI / Normalized FFMI</h2>
       <p className="mt-1 text-sm text-white/80">Fat‑free mass index (normalized to 1.8 m). Estimates natural muscularity.</p>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
         <Num label="Weight (kg)" value={weight} setValue={setWeight} min={20} max={300} />
         <Num label="Height (cm)" value={height} setValue={setHeight} min={120} max={230} />
         <Num label="Body‑Fat %" value={bf} setValue={setBf} min={2} max={60} />
@@ -1152,14 +1152,14 @@ function HydrationCard() {
   }, [weight, climate, sessionMin]);
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="p-6 border rounded-3xl border-white/10 bg-white/5">
       <h2 className="text-2xl font-extrabold">Hydration & Electrolytes</h2>
       <p className="mt-1 text-sm text-white/80">Daily fluids plus simple electrolyte guidance based on bodyweight, climate, and training time.</p>
-      <form className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
+      <form className="grid grid-cols-2 gap-3 mt-3 sm:grid-cols-6" onSubmit={(e)=>e.preventDefault()}>
         <Num label="Weight (kg)" value={weight} setValue={setWeight} min={20} max={300} />
-        <label className="col-span-2 flex flex-col gap-1">
+        <label className="flex flex-col col-span-2 gap-1">
           <span className="text-xs text-white/70">Climate</span>
-          <select value={climate} onChange={(e)=>setClimate(e.target.value as any)} className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-500">
+          <select value={climate} onChange={(e)=>setClimate(e.target.value as any)} className="px-3 py-2 border rounded-lg outline-none border-white/10 bg-black/40 focus:ring-2 focus:ring-cyan-500">
             <option value="temperate">Temperate</option>
             <option value="hot">Hot</option>
           </select>

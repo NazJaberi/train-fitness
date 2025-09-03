@@ -1,3 +1,4 @@
+// eslint.config.mjs
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
@@ -10,7 +11,9 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals"),
+  // THE FIX: We need to extend both sets of rules
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  
   {
     ignores: [
       "node_modules/**",
@@ -20,16 +23,10 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
-  // ADD THIS NEW OBJECT TO THE ARRAY
   {
     rules: {
-      // This changes the 'any' type from a build-breaking error to a warning
       "@typescript-eslint/no-explicit-any": "warn",
-      
-      // This will fix the <a> tag errors
       "@next/next/no-html-link-for-pages": "off",
-      
-      // This will fix the unescaped quotes/apostrophes error
       "react/no-unescaped-entities": "warn",
     },
   },
