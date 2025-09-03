@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode, type Dispatch, type SetStateAction } from "react";
 
 type ActivityKey = "sedentary" | "light" | "moderate" | "active" | "very";
 
