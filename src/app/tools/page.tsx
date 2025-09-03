@@ -967,7 +967,7 @@ function timeMinusHours(wakeHHMM: string, hours: number): string {
   const [H,M] = wakeHHMM.split(":").map(n=>parseInt(n,10));
   if ([H,M].some(isNaN)) return "—";
   const total = H*60 + M - Math.round(hours*60);
-  let t = (total % (24*60) + 24*60) % (24*60);
+  const t = (total % (24*60) + 24*60) % (24*60); // <-- Changed 'let' to 'const'
   const hh = Math.floor(t/60).toString().padStart(2,'0');
   const mm = Math.floor(t%60).toString().padStart(2,'0');
   return `${hh}:${mm}`;
